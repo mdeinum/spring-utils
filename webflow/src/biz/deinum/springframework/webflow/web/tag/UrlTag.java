@@ -69,7 +69,7 @@ public class UrlTag extends AbstractEventFlowTag {
 
         String printUrl = getUrl();
         if (logger.isDebugEnabled()) {
-            logger.debug("Writing url ["+printUrl+"]");
+            logger.debug("Writing url [{}]", printUrl);
         }
         
         tagWriter.startTag("a");
