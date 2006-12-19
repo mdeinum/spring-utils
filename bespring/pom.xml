@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>biz.deinum.springframework</groupId>
+  <artifactId>bespring</artifactId>
+  <packaging>pom</packaging>
+  <name>bespring</name>
+  <version>1.0-SNAPSHOT</version>
+  <url>http://code.google.com/p/bespring</url>
+  <licenses>
+    <license>
+      <name>The Apache Software License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+  <modules>
+    <module>bespring-core</module>
+    <module>bespring-validation</module>
+    <module>bespring-jdbc</module>
+    <module>bespring-hibernate3</module>
+    <module>bespring-webflow</module>
+  </modules>
+  <dependencies>
+    <dependency>
+      <groupId>commons-logging</groupId>
+      <artifactId>commons-logging</artifactId>
+      <version>1.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring</artifactId>
+      <version>2.0</version>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>3.8.1</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+</project>
