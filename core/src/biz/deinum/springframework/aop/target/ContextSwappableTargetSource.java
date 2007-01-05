@@ -100,6 +100,10 @@ public class ContextSwappableTargetSource implements TargetSource,
 		this.alwaysReturnTarget=alwaysReturnTarget;
 	}
 	
+    public final void setDefaultTarget(final Object defaultTarget) {
+        this.defaultTarget=defaultTarget;
+    }
+	
 	public final void setTargets(final Map targets) {
 		this.targets.clear();
 		this.targets.putAll(targets);
