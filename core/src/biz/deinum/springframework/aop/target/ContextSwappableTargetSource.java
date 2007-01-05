@@ -64,8 +64,8 @@ public class ContextSwappableTargetSource implements TargetSource,
         if (target == null && alwaysReturnTarget) {
     		logger.debug("Return default target for context '{}'", contextName);
     		target = defaultTarget;
-        } else {
-        	logger.error("Cannot locate a target for context '{}'", contextName);
+        } else if (target == null && !alwaysReturnTarget){
+        	logger.error("Cannot locate a target of type '{}' for context '{}'", targetClass.getName(), contextName);
         	throw new TargetLookupFailureException("Cannot locate a target for context '"+contextName+"'");
         }
         
