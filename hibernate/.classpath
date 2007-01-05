@@ -7,5 +7,6 @@
 	<classpathentry kind="lib" path="/core/lib/logback-classic-0.7.1.jar"/>
 	<classpathentry kind="lib" path="/core/lib/slf4j-api-1.1.0-RC1.jar"/>
 	<classpathentry kind="lib" path="/core/lib/spring.jar"/>
+	<classpathentry kind="lib" path="lib/hibernate3.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
