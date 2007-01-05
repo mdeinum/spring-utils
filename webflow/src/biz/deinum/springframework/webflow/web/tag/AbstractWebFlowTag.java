@@ -18,13 +18,13 @@ import org.springframework.webflow.executor.support.FlowExecutorArgumentHandler;
 /**
  * Base class for all WebFlowTags.
  * 
- * @author M. Deinum (487)
- * 
+ * @author Marten Deinum
+ * @version 1.1
  */
 public abstract class AbstractWebFlowTag extends AbstractHtmlElementTag {
-	private Logger logger = LoggerFactory.getLogger(AbstractWebFlowTag.class);
+	private final Logger logger = LoggerFactory.getLogger(AbstractWebFlowTag.class);
 
-	private static FlowExecutorArgumentHandler argumentHandler;
+	private FlowExecutorArgumentHandler argumentHandler;
 
 	private ExternalContext context;
 
@@ -32,6 +32,10 @@ public abstract class AbstractWebFlowTag extends AbstractHtmlElementTag {
 		super();
 	}
 
+	/**
+	 * If some extra setup needs to be done subclasses must override this method. 
+	 * @throws Exception
+	 */
 	protected void initTag() throws Exception {
 	}
 
@@ -41,23 +45,21 @@ public abstract class AbstractWebFlowTag extends AbstractHtmlElementTag {
 	 * {@link #initTag()} method.
 	 */
 	protected final void doSetupTag() throws Exception {
-		if (argumentHandler == null) {
-			logger.debug("Initializing 'argumentHandler'.");
-			ApplicationContext ctx = RequestContextUtils
-					.getWebApplicationContext(pageContext.getRequest());
-			Map controllers = ctx.getBeansOfType(FlowController.class, false,
-					false);
-			if (controllers.isEmpty()) {
-				throw new IllegalStateException(
-						"Cannot retrieve ArgumentHandler no FlowController defined in scope.");
-			}
-			Object key = controllers.keySet().iterator().next();
-			FlowController controller = (FlowController) controllers.get(key);
-			argumentHandler = controller.getArgumentHandler();
-			Assert.notNull(argumentHandler,
-					"ArgumentHandler not set, error in configuration!");
-			logger.debug("argumentHandler is set.");
+		logger.debug("Initializing 'argumentHandler'.");
+		ApplicationContext ctx = RequestContextUtils
+				.getWebApplicationContext(pageContext.getRequest());
+		Map controllers = ctx
+				.getBeansOfType(FlowController.class, false, false);
+		if (controllers.isEmpty()) {
+			throw new IllegalStateException(
+					"Cannot retrieve ArgumentHandler no FlowController defined in scope.");
 		}
+		Object key = controllers.keySet().iterator().next();
+		FlowController controller = (FlowController) controllers.get(key);
+		argumentHandler = controller.getArgumentHandler();
+		Assert.notNull(argumentHandler,
+				"ArgumentHandler not set, error in configuration!");
+		logger.debug("argumentHandler is set.");
 		initTag();
 	}
 
