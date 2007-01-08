@@ -1,13 +1,8 @@
 package biz.deinum.springframework.aop.target;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.TargetSource;
-import org.springframework.beans.factory.BeanNotOfRequiredTypeException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
@@ -22,13 +17,22 @@ import biz.deinum.springframework.core.ContextHolder;
  * @version 1.0
  * @see ContextHolder
  * @see TargetSource
+ * @see TargetRegistry
  */
 public class ContextSwappableTargetSource implements TargetSource,
 		InitializingBean {
 	private final Logger logger = LoggerFactory.getLogger(ContextSwappableTargetSource.class);
-	private Map targets = Collections.synchronizedMap(new HashMap());
+	
+	/** The TargetRegistry used to lookup the desired target*/
+	private TargetRegistry registry;
+	
+	/** The type of class this TargetSource supports */
 	private Class targetClass;
+	
+	/** Should we alsways return a value, if <code>true</code>, defaultTarget must also be set */
 	private boolean alwaysReturnTarget = false;
+	
+	/** The defaultObjct to return if <code>alwaysReturnTarget</code> is true */
 	private Object defaultTarget;
 	
 	/**
@@ -46,25 +50,22 @@ public class ContextSwappableTargetSource implements TargetSource,
 	 * Locate and return the sessionfactory for the current context.
 	 * 
 	 * First we lookup the context name from the {@link ContextHolder}
-	 * this context name is used to lookup the desired target. When none
-	 * is found we return the default target. 
+	 * this context name is used to lookup the desired target. When no
+	 * target is being found an {@link TargetLookupFailureException} is thrown.
 	 * 
-	 * If the targetClass is of a invalid type we throw a {@link BeanNotOfRequiredTypeException}
+	 * If the targetClass is of a invalid type we throw a {@link TargetLookupFailureException}
 	 * 
 	 * @see ContextHolder
+	 * @throws TargetLookupFailureException
 	 */
 
 	public Object getTarget() throws Exception {
-        // Determine the current context name from theclass that holds the
-        // context name for the current thread.
         String contextName = ContextHolder.getContext();
     	logger.debug("Current context: '{}'", contextName);
         
-        Object target = targets.get(contextName);
-        if (target == null && alwaysReturnTarget) {
-    		logger.debug("Return default target for context '{}'", contextName);
-    		target = defaultTarget;
-        } else if (target == null && !alwaysReturnTarget){
+        Object target = getTarget(contextName);
+
+        if (target == null) {
         	logger.error("Cannot locate a target of type '{}' for context '{}'", targetClass.getName(), contextName);
         	throw new TargetLookupFailureException("Cannot locate a target for context '"+contextName+"'");
         }
@@ -84,8 +85,26 @@ public class ContextSwappableTargetSource implements TargetSource,
 	public final boolean isStatic() {
 		return false;
 	}
+	
+	/**
+	 * Gets the targetobject from the configured {@link TargetRegistry}. If no target is found and
+	 * <code>alwaysReturnTarget</code> is set to <code>true</code>, the <code>defaultTarget</code> is used
+	 * as the targetObject, else <code>null</code> is being returned.
+	 * 
+	 * @param context
+	 * @return targetObject or <code>null</code>
+	 * @see TargetRegistry#getTarget(String)
+	 */
+	private Object getTarget(final String context) {
+		Object target = registry.getTarget(context);
+		if (target == null && alwaysReturnTarget) {
+			logger.debug("Return default target for context '{}'", context);
+			target = defaultTarget;
+		}
+		return target;
+	}
 
-	public void releaseTarget(Object arg0) throws Exception {}
+	public void releaseTarget(final Object target) throws Exception {}
 
 	public final void afterPropertiesSet() throws Exception {
 		Assert.notNull(targetClass, "TargetClass property must be set!");
@@ -104,9 +123,8 @@ public class ContextSwappableTargetSource implements TargetSource,
         this.defaultTarget=defaultTarget;
     }
 	
-	public final void setTargets(final Map targets) {
-		this.targets.clear();
-		this.targets.putAll(targets);
-	} 
+    public final void setTargetRegistry(final TargetRegistry registry) {
+    	this.registry=registry;
+    }
 
 }
