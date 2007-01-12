@@ -83,8 +83,26 @@ public abstract class AbstractWebFlowTag extends AbstractHtmlElementTag {
 		return argumentHandler.getEventIdArgumentName();
 	}
 
+	/**
+     * Get the flowExecutionKey from the request. If it is not on the request a fallback
+     * to the argumentHandler.extractFlowExecutionKey will be issued.
+     * 
+     * @return the flowExecutionKey or null when none is found.
+     * @see FlowExecutorArgumentHandler#extractFlowExecutionKey(ExternalContext)
+     */
 	protected final String getFlowExecutionKey() {
-		return argumentHandler.extractFlowExecutionKey(getContext());
+        String key = null;
+        try {
+            key = (String) pageContext.getRequest().getAttribute(getFlowExecutionKeyAttributeName());
+            if (key == null) {
+                key = argumentHandler.extractFlowExecutionKey(getContext());
+            }
+        } catch (Exception e) {
+            logger.error("Error locating '_flowExecutionKey'");
+            logger.debug("ArgumentHandler: {}", argumentHandler);
+            logger.debug("Context: {}", getContext());
+        }
+        return key;
 	}
 
 	/**
