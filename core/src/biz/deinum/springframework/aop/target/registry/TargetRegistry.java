@@ -1,4 +1,4 @@
-package biz.deinum.springframework.aop.target;
+package biz.deinum.springframework.aop.target.registry;
 
 public interface TargetRegistry {
 

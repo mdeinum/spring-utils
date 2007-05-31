@@ -6,6 +6,8 @@ import org.springframework.aop.TargetSource;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
+import biz.deinum.springframework.aop.target.registry.TargetPostProcessor;
+import biz.deinum.springframework.aop.target.registry.TargetRegistry;
 import biz.deinum.springframework.core.ContextHolder;
 
 /**
@@ -14,10 +16,11 @@ import biz.deinum.springframework.core.ContextHolder;
  * , depending on the setting of the alwaysReturnTarget property (default is false);
  * 
  * @author M. Deinum
- * @version 1.0
+ * @version 1.1
  * @see ContextHolder
  * @see TargetSource
  * @see TargetRegistry
+ * @see TargetPostProcessor
  */
 public class ContextSwappableTargetSource implements TargetSource,
 		InitializingBean {
@@ -34,6 +37,9 @@ public class ContextSwappableTargetSource implements TargetSource,
 	
 	/** The defaultObjct to return if <code>alwaysReturnTarget</code> is true */
 	private Object defaultTarget;
+	
+	/** The targetPostProcessor to use (optional). */
+	private TargetPostProcessor targetPostProcessor;
 	
 	/**
 	 * Constructor for the {@link ContextSwappableTargetSource} class. It takes a 
@@ -74,6 +80,11 @@ public class ContextSwappableTargetSource implements TargetSource,
         	throw new TargetLookupFailureException("The target for '"+contextName+"' is not of the required type." + 
         			"Expected '"+targetClass.getName()+"' and got '"+target.getClass().getName()+"'");
         }
+        
+        if (target != defaultTarget && targetPostProcessor != null && targetPostProcessor.supports(target.getClass())) {
+        	targetPostProcessor.postProcess(target);
+        }
+        
         return target;
 
 	}
@@ -125,6 +136,10 @@ public class ContextSwappableTargetSource implements TargetSource,
 	
     public final void setTargetRegistry(final TargetRegistry registry) {
     	this.registry=registry;
+    }
+    
+    public final void setTargetPostProcessor(final TargetPostProcessor targetPostProcessor) {
+    	this.targetPostProcessor=targetPostProcessor;
     }
 
 }

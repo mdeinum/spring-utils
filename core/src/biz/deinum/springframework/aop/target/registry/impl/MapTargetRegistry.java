@@ -1,8 +1,10 @@
-package biz.deinum.springframework.aop.target;
+package biz.deinum.springframework.aop.target.registry.impl;
 
 import java.util.Collections;
 import java.util.Map;
 import java.util.WeakHashMap;
+
+import biz.deinum.springframework.aop.target.registry.AbstractTargetRegistry;
 
 /**
  * TargetRegistry which retrieves the correct target from a Map.

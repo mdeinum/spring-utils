@@ -1,4 +1,4 @@
-package biz.deinum.springframework.aop.target;
+package biz.deinum.springframework.aop.target.registry.impl;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -7,6 +7,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.support.ApplicationObjectSupport;
 import org.springframework.util.Assert;
+
+import biz.deinum.springframework.aop.target.registry.AbstractTargetRegistry;
 
 /**
  * TargetRegistry which retrieves a bean from the application context.
