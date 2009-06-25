@@ -1,6 +1,13 @@
 package biz.deinum.springframework.aop.target.registry;
 
 
+/**
+ * Generic implementation and functionality for a {@link TargetRegistry}. 
+ * This class provides optional chaining of TargetRestry instances.
+ * 
+ * @author Marten Deinum
+ * @since 1.1
+ */
 public abstract class AbstractTargetRegistry implements TargetRegistry {
 
 	private TargetRegistry parent = null;
@@ -21,7 +28,7 @@ public abstract class AbstractTargetRegistry implements TargetRegistry {
 	}
 	
 	/**
-	 * Retrieve the target.
+	 * Retrieve the target. Subclasses must implement this method.
 	 * 
 	 * @param context
 	 * @return

@@ -9,11 +9,5 @@ public interface TargetRegistry {
 	 * @return
 	 */
 	public Object getTarget(final String context);
-	
-	/**
-	 * Sets the parentRegistry
-	 * @param registry
-	 */
-	public void setParentRegistry(final TargetRegistry registry);
-	
+
 }

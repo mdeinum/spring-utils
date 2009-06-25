@@ -1,4 +1,4 @@
-package biz.deinum.springframework.webflow.web.handler;
+package biz.deinum.springframework.webflow1.web.handler;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -33,7 +33,7 @@ public class FlowUrlHandlerMapping extends AbstractUrlHandlerMapping {
 		registerHandlers(this.urlMap);
 	}
 
-	protected Object lookupHandler(String urlPath, HttpServletRequest request) {
+	protected Object lookupHandler(String urlPath, HttpServletRequest request) throws Exception {
 		Object flow = super.lookupHandler(urlPath, request);
 		Object handler = null;
 		if (flow != null) {

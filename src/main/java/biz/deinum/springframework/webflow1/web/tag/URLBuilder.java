@@ -1,4 +1,4 @@
-package biz.deinum.springframework.webflow.web.tag;
+package biz.deinum.springframework.webflow1.web.tag;
 
 import java.util.Collections;
 import java.util.HashMap;
