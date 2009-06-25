@@ -1,0 +1,65 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>biz.deinum</groupId>
+	<artifactId>bespring</artifactId>
+	<version>0.0.2-SNAPSHOT</version>
+	<description>Some handy little Spring based extensions.</description>
+
+	<issueManagement>
+		<system>Google</system>
+		<url>http://code.google.com/p/bespring/issues</url>
+	</issueManagement>
+	<scm>
+		<tag>HEAD</tag>
+		<url>http://bespring.googlecode.com/svn/trunk/</url>
+		<developerConnection>https://bespring.googlecode.com/svn/trunk/</developerConnection>
+	</scm>
+	<organization>		
+		<name>Conspect ICT diensten</name>
+		<url>http://www.conspect.nl</url>
+	</organization>
+
+	<developers>
+		<developer>
+			<id>mdeinum</id>
+			<email>mdeinum@gmail.com</email>
+			<name>Marten Deinum</name>
+			<organization>Conspect ICT diensten</organization>
+			<roles>
+				<role>developer</role>
+			</roles>
+		</developer>
+	</developers>
+
+	<properties>
+		<spring.version>2.5.6.SEC01</spring.version>
+		<slf4j.version>1.5.8</slf4j.version>
+		<logback.version>0.9.15</logback.version>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-aop</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${slf4j.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<version>${logback.version}</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+</project>
