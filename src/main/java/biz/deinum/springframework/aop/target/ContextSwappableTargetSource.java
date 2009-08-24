@@ -32,10 +32,10 @@ public class ContextSwappableTargetSource implements TargetSource,
 	/** The type of class this TargetSource supports */
 	private Class targetClass;
 	
-	/** Should we alsways return a value, if <code>true</code>, defaultTarget must also be set */
+	/** Should we always return a value, if <code>true</code>, defaultTarget must also be set */
 	private boolean alwaysReturnTarget = false;
 	
-	/** The defaultObjct to return if <code>alwaysReturnTarget</code> is true */
+	/** The defaultObject to return if <code>alwaysReturnTarget</code> is true */
 	private Object defaultTarget;
 	
 	/** The targetPostProcessor to use (optional). */
