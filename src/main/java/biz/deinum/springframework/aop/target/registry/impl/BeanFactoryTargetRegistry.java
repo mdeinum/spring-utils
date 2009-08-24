@@ -3,22 +3,22 @@ package biz.deinum.springframework.aop.target.registry.impl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.util.Assert;
 
 import biz.deinum.springframework.aop.target.registry.AbstractTargetRegistry;
 
 /**
- * TargetRegistry which retrieves a bean from the application context.
+ * TargetRegistry which retrieves a bean from the {@link BeanFactory}.
  * @author Marten Deinum
  * @version 1.0
  */
-public class ApplicationContextTargetRegistry extends AbstractTargetRegistry implements ApplicationContextAware {
+public class BeanFactoryTargetRegistry extends AbstractTargetRegistry implements BeanFactoryAware {
 
-	private final Logger logger = LoggerFactory.getLogger(ApplicationContextTargetRegistry.class);
+	private final Logger logger = LoggerFactory.getLogger(BeanFactoryTargetRegistry.class);
 			
-	private ApplicationContext appContext;
+	private BeanFactory beanFactory;
 	private String prefix = "";  
 	private String suffix = "";
 	
@@ -46,15 +46,19 @@ public class ApplicationContextTargetRegistry extends AbstractTargetRegistry imp
 		String beanName = getTargetName(context);
 		Object target = null;
 		try {
-			logger.debug("Retrieving bean '{}' from ApplicationContext.", beanName);
-			target = this.appContext.getBean(beanName);
+			logger.debug("Retrieving bean '{}' from BeanFactory.", beanName);
+			target = this.beanFactory.getBean(beanName);
 		} catch (BeansException be) {
 			logger.warn("Could not retrieve bean '"+context+"'", be);	
 		}
 		return target;
 	}
 	
-	public void setApplicationContext(ApplicationContext context) throws BeansException {
-		this.appContext=context;
+	/**
+	 * {@inheritDoc}
+	 */
+	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+		this.beanFactory=beanFactory;
 	}
+	
 }

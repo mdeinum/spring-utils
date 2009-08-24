@@ -3,8 +3,18 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>biz.deinum</groupId>
 	<artifactId>bespring</artifactId>
-	<version>0.0.2-SNAPSHOT</version>
+	<version>1.2.0-SNAPSHOT</version>
+	<name>Bespring</name>
 	<description>Some handy little Spring based extensions.</description>
+	<url>http://bespring.googlecode.com</url>
+	<inceptionYear>2007</inceptionYear>
+
+	<licenses>
+		<license>
+			<name>Apache License 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0</url>
+		</license>
+	</licenses>
 
 	<issueManagement>
 		<system>Google</system>
@@ -15,7 +25,7 @@
 		<url>http://bespring.googlecode.com/svn/trunk/</url>
 		<developerConnection>https://bespring.googlecode.com/svn/trunk/</developerConnection>
 	</scm>
-	<organization>		
+	<organization>
 		<name>Conspect ICT diensten</name>
 		<url>http://www.conspect.nl</url>
 	</organization>
@@ -69,12 +79,44 @@
 			<artifactId>jsp-api</artifactId>
 			<version>2.0</version>
 		</dependency>
+		<!-- Test Dependencies -->
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
 			<version>${logback.version}</version>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
+			<version>${spring.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.4</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.easymock</groupId>
+			<artifactId>easymock</artifactId>
+			<version>2.5.1</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.5</source>
+					<target>1.5</target>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 
 </project>

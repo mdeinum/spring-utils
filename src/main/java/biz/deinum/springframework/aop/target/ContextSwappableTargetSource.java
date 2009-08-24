@@ -81,7 +81,7 @@ public class ContextSwappableTargetSource implements TargetSource,
         			"Expected '"+targetClass.getName()+"' and got '"+target.getClass().getName()+"'");
         }
         
-        if (target != defaultTarget && targetPostProcessor != null && targetPostProcessor.supports(target.getClass())) {
+        if (isEligibleForPostProcessing(target)) {
         	targetPostProcessor.postProcess(target);
         }
         
@@ -89,6 +89,23 @@ public class ContextSwappableTargetSource implements TargetSource,
 
 	}
 
+	/**
+	 * Checks if the given <em>target</em> is eligible for post processing. A
+	 * target is eligible if it is not the same as the defaultTarget and not
+	 * null. The final check is done against the {@link TargetPostProcessor}.
+	 * Subclasses may override this method.
+	 *  
+	 * @param target
+	 * @return
+	 */
+	protected boolean isEligibleForPostProcessing(Object target) {
+		boolean eligible = false;
+		if (target != null && target != defaultTarget) {
+			eligible = (targetPostProcessor != null && targetPostProcessor.supports(target.getClass()));
+		}
+		return eligible;
+	}
+	
 	public final Class getTargetClass() {
 		return targetClass;
 	}
@@ -98,9 +115,10 @@ public class ContextSwappableTargetSource implements TargetSource,
 	}
 	
 	/**
-	 * Gets the targetobject from the configured {@link TargetRegistry}. If no target is found and
-	 * <code>alwaysReturnTarget</code> is set to <code>true</code>, the <code>defaultTarget</code> is used
-	 * as the targetObject, else <code>null</code> is being returned.
+	 * Gets the targetobject from the configured {@link TargetRegistry}. If no
+	 * target is found and <code>alwaysReturnTarget</code> is set to <code>
+	 * true</code>, the <code>defaultTarget</code> is used as the targetObject,
+	 * else <code>null</code> is being returned. 
 	 * 
 	 * @param context
 	 * @return targetObject or <code>null</code>
@@ -119,9 +137,9 @@ public class ContextSwappableTargetSource implements TargetSource,
 
 	public final void afterPropertiesSet() throws Exception {
 		Assert.notNull(targetClass, "TargetClass property must be set!");
-		
-		if (alwaysReturnTarget && defaultTarget == null) {
-			throw new IllegalStateException("The defaultTarget property is null, while alwaysReturnTarget is set to true. " +
+		Assert.notNull(registry, "TargetRegistry must be set!");
+		if (alwaysReturnTarget) {
+			Assert.notNull(defaultTarget, "The defaultTarget property is null, while alwaysReturnTarget is set to true. " +
 					"When alwaysReturnTarget is set to true a defaultTarget must be set!");
 		}
 	}
