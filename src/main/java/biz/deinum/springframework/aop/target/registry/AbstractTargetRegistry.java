@@ -1,5 +1,7 @@
 package biz.deinum.springframework.aop.target.registry;
 
+import org.springframework.core.Ordered;
+
 
 /**
  * Generic implementation and functionality for a {@link TargetRegistry}. 
@@ -8,9 +10,11 @@ package biz.deinum.springframework.aop.target.registry;
  * @author Marten Deinum
  * @since 1.1
  */
-public abstract class AbstractTargetRegistry implements TargetRegistry {
+public abstract class AbstractTargetRegistry implements TargetRegistry, Ordered {
 
 	private TargetRegistry parent = null;
+	
+	private int order;
 	
 	public final void setParentRegistry(final TargetRegistry registry) {
 		this.parent=registry;
@@ -25,6 +29,14 @@ public abstract class AbstractTargetRegistry implements TargetRegistry {
 			target = parent.getTarget(context);
 		}
 		return target;
+	}
+	
+	public int getOrder() {
+		return order;
+	}
+	
+	public void setOrder(int order) {
+		this.order=order;
 	}
 	
 	/**
