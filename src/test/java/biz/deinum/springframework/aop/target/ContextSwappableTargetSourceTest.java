@@ -11,6 +11,7 @@ import org.easymock.EasyMock;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.context.support.GenericApplicationContext;
 
 import biz.deinum.springframework.aop.target.registry.TargetPostProcessor;
 import biz.deinum.springframework.aop.target.registry.TargetRegistry;
@@ -32,6 +33,7 @@ public class ContextSwappableTargetSourceTest {
 		targetPostProcessor = EasyMock.createMock(TargetPostProcessor.class);
 		ts = new ContextSwappableTargetSource(DummyTestInterface.class);
 		ts.setTargetRegistry(registry);
+		ts.setApplicationContext(new GenericApplicationContext());
 		ContextHolder.setContext(CONTEXT);
 	}
 	

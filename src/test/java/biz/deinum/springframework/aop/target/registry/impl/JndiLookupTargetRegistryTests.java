@@ -34,9 +34,9 @@ public class JndiLookupTargetRegistryTests {
 		builder.clear();
 	}
 	
-	@Test(expected=TargetLookupFailureException.class)
+	@Test
 	public void notFound() {
-		targetRegistry.getTarget("not-existing");
+		assertNull(targetRegistry.getTarget("not-existing"));
 	}
 	
 	@Test
