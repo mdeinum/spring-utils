@@ -1,13 +1,25 @@
 package biz.deinum.springframework.aop.target;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.TargetSource;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.core.OrderComparator;
 import org.springframework.util.Assert;
 
 import biz.deinum.springframework.aop.target.registry.TargetPostProcessor;
 import biz.deinum.springframework.aop.target.registry.TargetRegistry;
+import biz.deinum.springframework.aop.target.registry.impl.BeanFactoryTargetRegistry;
 import biz.deinum.springframework.core.ContextHolder;
 
 /**
@@ -15,19 +27,24 @@ import biz.deinum.springframework.core.ContextHolder;
  * If no context is found a {@link TargetLookupFailureException} is thrown or the <code>defaultTarget</code> is returned
  * , depending on the setting of the alwaysReturnTarget property (default is false);
  * 
+ * By default this class delegates the detection of target to a {@link BeanFactoryTargetRegistry}. 
+ * Multiple target registries can be registered on this bean, either manually or by just declaring
+ * them in the ApplicationContext. A best effort is made to lookup the TargetRegistries from the
+ * ApplicatonContext.
+ *  
+ * 
  * @author M. Deinum
- * @version 1.1
+ * @version 1.2
  * @see ContextHolder
  * @see TargetSource
  * @see TargetRegistry
  * @see TargetPostProcessor
  */
-public class ContextSwappableTargetSource implements TargetSource,
-		InitializingBean {
+public class ContextSwappableTargetSource implements TargetSource, InitializingBean, ApplicationContextAware {
 	private final Logger logger = LoggerFactory.getLogger(ContextSwappableTargetSource.class);
 	
-	/** The TargetRegistry used to lookup the desired target*/
-	private TargetRegistry registry;
+	/** The TargetRegistries used to lookup the desired target */ 
+	private List registries;
 	
 	/** The type of class this TargetSource supports */
 	private Class targetClass;
@@ -41,6 +58,9 @@ public class ContextSwappableTargetSource implements TargetSource,
 	/** The targetPostProcessor to use (optional). */
 	private TargetPostProcessor targetPostProcessor;
 	
+	/** The ApplicationContext we are defined in */
+	private ApplicationContext context;
+	
 	/**
 	 * Constructor for the {@link ContextSwappableTargetSource} class. It takes a 
 	 * Class as a parameter.
@@ -53,11 +73,11 @@ public class ContextSwappableTargetSource implements TargetSource,
 	}
 	
 	/**
-	 * Locate and return the sessionfactory for the current context.
+	 * Locate and return the target for the current context.
 	 * 
 	 * First we lookup the context name from the {@link ContextHolder}
 	 * this context name is used to lookup the desired target. When no
-	 * target is being found an {@link TargetLookupFailureException} is thrown.
+	 * target is found a {@link TargetLookupFailureException} is thrown.
 	 * 
 	 * If the targetClass is of a invalid type we throw a {@link TargetLookupFailureException}
 	 * 
@@ -122,10 +142,12 @@ public class ContextSwappableTargetSource implements TargetSource,
 	 * 
 	 * @param context
 	 * @return targetObject or <code>null</code>
+	 * @throws TargetLookupFailureException if nothing can be returned
+	 * 
 	 * @see TargetRegistry#getTarget(String)
 	 */
 	private Object getTarget(final String context) {
-		Object target = registry.getTarget(context);
+		Object target = resolveTarget(context);
 		if (target == null && alwaysReturnTarget) {
 			logger.debug("Return default target for context '{}'", context);
 			target = defaultTarget;
@@ -133,14 +155,43 @@ public class ContextSwappableTargetSource implements TargetSource,
 		return target;
 	}
 
+	protected Object resolveTarget(final String context) {
+		Object target = null;
+		for (Iterator it = this.registries.iterator(); it.hasNext();) {
+			TargetRegistry registry = (TargetRegistry) it.next();
+			logger.debug("Using '{}' to lookup '{}'.", registry, context);
+			target= registry.getTarget(context);
+			if (target != null) {
+				break;
+			}
+		}
+		return target;
+	}
+	
 	public void releaseTarget(final Object target) throws Exception {}
 
 	public final void afterPropertiesSet() throws Exception {
 		Assert.notNull(targetClass, "TargetClass property must be set!");
-		Assert.notNull(registry, "TargetRegistry must be set!");
+		
+		initTargetRegistries();
+		
 		if (alwaysReturnTarget) {
 			Assert.notNull(defaultTarget, "The defaultTarget property is null, while alwaysReturnTarget is set to true. " +
 					"When alwaysReturnTarget is set to true a defaultTarget must be set!");
+		}
+	}
+	
+	private void initTargetRegistries() {
+		if (this.registries == null || this.registries.isEmpty()) {
+			Map matchingBeans = BeanFactoryUtils.beansOfTypeIncludingAncestors(context, TargetRegistry.class, true, false);
+			if (!matchingBeans.isEmpty()) {
+				this.registries = new ArrayList(matchingBeans.values());
+				Collections.sort(this.registries, new OrderComparator());
+			} else {
+				BeanFactoryTargetRegistry registry = new BeanFactoryTargetRegistry();
+				registry.setBeanFactory(this.context);
+				this.registries = Collections.singletonList(registry);
+			}
 		}
 	}
 	
@@ -153,11 +204,23 @@ public class ContextSwappableTargetSource implements TargetSource,
     }
 	
     public final void setTargetRegistry(final TargetRegistry registry) {
-    	this.registry=registry;
+    	this.registries = Collections.singletonList(registry);
+    }
+    
+    public final void setTargetRegistries(final List registries) {
+    	this.registries=registries;
     }
     
     public final void setTargetPostProcessor(final TargetPostProcessor targetPostProcessor) {
     	this.targetPostProcessor=targetPostProcessor;
     }
+    
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+    	this.context=applicationContext;
+    }
 
+    List getTargetRegistries() {
+    	return this.registries;
+    }
+    
 }
