@@ -14,7 +14,7 @@ import biz.deinum.springframework.aop.target.registry.AbstractTargetRegistry;
  * @author Marten Deinum
  * @version 1.0
  */
-public class BeanFactoryTargetRegistry extends AbstractTargetRegistry implements BeanFactoryAware {
+public class BeanFactoryTargetRegistry<T> extends AbstractTargetRegistry<T> implements BeanFactoryAware {
 
 	private final Logger logger = LoggerFactory.getLogger(BeanFactoryTargetRegistry.class);
 			
@@ -42,14 +42,15 @@ public class BeanFactoryTargetRegistry extends AbstractTargetRegistry implements
 	 * 
 	 * @return the found object or <code>null</code>
 	 */
-	protected Object getTargetInternal(String context) {
+	@SuppressWarnings("unchecked")
+	protected T getTargetInternal(String context) {
 		String beanName = getTargetName(context);
-		Object target = null;
+		T target = null;
 		try {
 			logger.debug("Retrieving bean '{}' from BeanFactory.", beanName);
-			target = this.beanFactory.getBean(beanName);
+			target = (T) this.beanFactory.getBean(beanName);
 		} catch (BeansException be) {
-			logger.warn("Could not retrieve bean '"+context+"'", be);	
+			logger.warn("Could not retrieve bean '{}'", context, be);	
 		}
 		return target;
 	}

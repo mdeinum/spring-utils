@@ -13,11 +13,11 @@ import biz.deinum.springframework.aop.target.registry.AbstractTargetRegistry;
  * @version 1.0
  * 
  */
-public class MapTargetRegistry extends AbstractTargetRegistry {
+public class MapTargetRegistry<T> extends AbstractTargetRegistry<T> {
 
-	private final Map targets = Collections.synchronizedMap(new WeakHashMap());
+	private final Map<String, T> targets = Collections.synchronizedMap(new WeakHashMap<String, T>());
 	
-	public void setTargets(final Map targets) {
+	public void setTargets(final Map<String, T> targets) {
 		this.targets.clear();
 		this.targets.putAll(targets);
 	}
@@ -27,7 +27,7 @@ public class MapTargetRegistry extends AbstractTargetRegistry {
 	 * 
 	 * @return the target or <code>null</code>
 	 */
-	protected Object getTargetInternal(String context) {
+	protected T getTargetInternal(String context) {
 		return targets.get(context);	
 	}
 

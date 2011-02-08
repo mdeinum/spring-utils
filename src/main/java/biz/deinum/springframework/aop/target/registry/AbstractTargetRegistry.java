@@ -10,21 +10,21 @@ import org.springframework.core.Ordered;
  * @author Marten Deinum
  * @since 1.1
  */
-public abstract class AbstractTargetRegistry implements TargetRegistry, Ordered {
+public abstract class AbstractTargetRegistry<T> implements TargetRegistry<T>, Ordered {
 
-	private TargetRegistry parent = null;
+	private TargetRegistry<T> parent = null;
 	
 	private int order;
 	
-	public final void setParentRegistry(final TargetRegistry registry) {
+	public final void setParentRegistry(final TargetRegistry<T> registry) {
 		this.parent=registry;
 	}
 	
 	/**
 	 * {@inheritDoc}
 	 */
-	public final Object getTarget(String context) {
-		Object target = getTargetInternal(context);
+	public final T getTarget(String context) {
+		T target = getTargetInternal(context);
 		if (target == null && parent != null) {
 			target = parent.getTarget(context);
 		}
@@ -46,7 +46,7 @@ public abstract class AbstractTargetRegistry implements TargetRegistry, Ordered 
 	 * @return
 	 * @see #getTarget(String)
 	 */
-	protected abstract Object getTargetInternal(final String context); 
+	protected abstract T getTargetInternal(final String context); 
 
 	
 	

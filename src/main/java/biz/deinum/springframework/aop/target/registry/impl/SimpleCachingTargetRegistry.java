@@ -15,18 +15,18 @@ import biz.deinum.springframework.aop.target.registry.TargetRegistry;
  * @since 1.2.0
  *
  */
-public class SimpleCachingTargetRegistry implements TargetRegistry {
+public class SimpleCachingTargetRegistry<T> implements TargetRegistry<T> {
 
-	private final Map cache = new ConcurrentHashMap();
-	private final TargetRegistry delegate;
+	private final Map<String, T> cache = new ConcurrentHashMap<String, T>();
+	private final TargetRegistry<T> delegate;
 	
-	public SimpleCachingTargetRegistry(TargetRegistry delegate) {
+	public SimpleCachingTargetRegistry(TargetRegistry<T> delegate) {
 		super();
 		this.delegate=delegate;
 	}
 
-	public Object getTarget(String context) {
-		Object  target = cache.get(context);
+	public T getTarget(String context) {
+		T  target = cache.get(context);
 		if (target == null) {
 			target = delegate.getTarget(context);
 			if (target != null) {

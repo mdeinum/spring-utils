@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class ContextHolder {
 
-	private static final ThreadLocal holder = new ThreadLocal();
+	private static final ThreadLocal<String> holder = new ThreadLocal<String>();
 	
 	public static void setContext(String context) {
 		LoggerFactory.getLogger(ContextHolder.class).debug("context set '{}'", context);
@@ -20,7 +20,7 @@ public abstract class ContextHolder {
 	}
 	
 	public static String getContext() {
-		return (String) holder.get();
+		return holder.get();
 	}
 	
 }

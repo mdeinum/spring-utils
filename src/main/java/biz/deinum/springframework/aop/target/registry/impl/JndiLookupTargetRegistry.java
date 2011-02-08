@@ -8,7 +8,6 @@ import org.springframework.jndi.JndiLocatorSupport;
 import org.springframework.jndi.JndiObjectLocator;
 import org.springframework.jndi.JndiTemplate;
 
-import biz.deinum.springframework.aop.target.TargetLookupFailureException;
 import biz.deinum.springframework.aop.target.registry.TargetRegistry;
 
 /**
@@ -23,7 +22,7 @@ import biz.deinum.springframework.aop.target.registry.TargetRegistry;
  * 
  * @see JndiObjectLocator
  */
-public class JndiLookupTargetRegistry extends JndiLocatorSupport implements TargetRegistry {
+public class JndiLookupTargetRegistry<T> extends JndiLocatorSupport implements TargetRegistry<T> {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 	
@@ -32,14 +31,20 @@ public class JndiLookupTargetRegistry extends JndiLocatorSupport implements Targ
 	private String suffix = "";
 	
 	
-	public Object getTarget(String context) {
-		Object target = null; 
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @see #lookup(String)
+	 */
+	@SuppressWarnings("unchecked")
+	public T getTarget(String context) {
+		T target = null; 
 		try {
 			String jndiName = getJndiName(context);
-			target = lookup(jndiName);
+			target = (T) lookup(jndiName);
 		} catch (NamingException e) {
 			//Log exception but don't rethrow, that would break the TargetRegistry contract.
-			logger.error("Error looking up target for context '"+context+"'" , e);
+			logger.error("Error looking up target for context '{}'", context , e);
 		}
 		return target;
 	}

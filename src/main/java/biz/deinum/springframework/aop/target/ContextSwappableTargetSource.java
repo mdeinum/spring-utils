@@ -3,6 +3,7 @@ package biz.deinum.springframework.aop.target;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -44,10 +45,10 @@ public class ContextSwappableTargetSource implements TargetSource, InitializingB
 	private final Logger logger = LoggerFactory.getLogger(ContextSwappableTargetSource.class);
 	
 	/** The TargetRegistries used to lookup the desired target */ 
-	private List registries;
+	private final List<TargetRegistry<?>> registries = new LinkedList<TargetRegistry<?>>();
 	
 	/** The type of class this TargetSource supports */
-	private Class targetClass;
+	private Class<?> targetClass;
 	
 	/** Should we always return a value, if <code>true</code>, defaultTarget must also be set */
 	private boolean alwaysReturnTarget = false;
@@ -181,16 +182,17 @@ public class ContextSwappableTargetSource implements TargetSource, InitializingB
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	private void initTargetRegistries() {
-		if (this.registries == null || this.registries.isEmpty()) {
-			Map matchingBeans = BeanFactoryUtils.beansOfTypeIncludingAncestors(context, TargetRegistry.class, true, false);
+		if (this.registries.isEmpty()) {
+			Map<String, TargetRegistry<?>> matchingBeans = BeanFactoryUtils.beansOfTypeIncludingAncestors(context, TargetRegistry.class, true, false);
 			if (!matchingBeans.isEmpty()) {
-				this.registries = new ArrayList(matchingBeans.values());
+				this.registries.addAll(matchingBeans.values());
 				Collections.sort(this.registries, new OrderComparator());
 			} else {
-				BeanFactoryTargetRegistry registry = new BeanFactoryTargetRegistry();
+				BeanFactoryTargetRegistry<?> registry = new BeanFactoryTargetRegistry();
 				registry.setBeanFactory(this.context);
-				this.registries = Collections.singletonList(registry);
+				this.registries.add(registry);
 			}
 		}
 	}
@@ -203,12 +205,13 @@ public class ContextSwappableTargetSource implements TargetSource, InitializingB
         this.defaultTarget=defaultTarget;
     }
 	
-    public final void setTargetRegistry(final TargetRegistry registry) {
-    	this.registries = Collections.singletonList(registry);
+    public final void setTargetRegistry(final TargetRegistry<?> registry) {
+    	this.registries.clear();
+    	this.registries.add(registry);
     }
     
-    public final void setTargetRegistries(final List registries) {
-    	this.registries=registries;
+    public final void setTargetRegistries(final List<TargetRegistry<?>> registries) {
+    	this.registries.addAll(registries);
     }
     
     public final void setTargetPostProcessor(final TargetPostProcessor targetPostProcessor) {
@@ -219,7 +222,7 @@ public class ContextSwappableTargetSource implements TargetSource, InitializingB
     	this.context=applicationContext;
     }
 
-    List getTargetRegistries() {
+    List<TargetRegistry<?>> getTargetRegistries() {
     	return this.registries;
     }
     
