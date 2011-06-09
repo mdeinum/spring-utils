@@ -1,5 +1,9 @@
 package biz.deinum.springframework.validation;
 
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
@@ -10,19 +14,23 @@ import org.springframework.validation.Validator;
  *
  */
 public final class CompositeValidator implements Validator {
-    private final Validator[] validators;
+    private final List<Validator> validators = new LinkedList<Validator>();
 
     public CompositeValidator(final Validator[] validators) {
-        super();
-        this.validators=validators;
+    	this(Arrays.asList(validators));
+    }
+    
+    public CompositeValidator(final List<Validator> validators) {
+    	super();
+    	this.validators.addAll(validators);
     }
     
     /**
      * Will return true if this class is in the specified map.
      */
-    public boolean supports(final Class clazz) {
-    	for (int i = 0; i < validators.length; i++) {
-    		Validator v = validators[i];
+    @SuppressWarnings("rawtypes")
+	public boolean supports(final Class clazz) {
+    	for (Validator v : validators) {
             if (v.supports(clazz)) {
                 return true;
             }
@@ -34,8 +42,7 @@ public final class CompositeValidator implements Validator {
      * Validate the specified object using the validator registered for the object's class.
      */
     public void validate(final Object target, final Errors errors) {
-    	for (int i = 0; i < validators.length; i++) {
-    		Validator v = validators[i];
+    	for (Validator v : validators) {
             if (v.supports(target.getClass())) {
                v.validate(target, errors);
             }

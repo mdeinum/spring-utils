@@ -1,8 +1,6 @@
 package biz.deinum.springframework.aop.target;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -68,7 +66,7 @@ public class ContextSwappableTargetSource implements TargetSource, InitializingB
 	 * 
 	 * @param targetClass The Class which this TargetSource represents.
 	 */
-	public ContextSwappableTargetSource(Class targetClass) {
+	public ContextSwappableTargetSource(Class<?> targetClass) {
 		super();
 		this.targetClass=targetClass;
 	}
@@ -127,7 +125,7 @@ public class ContextSwappableTargetSource implements TargetSource, InitializingB
 		return eligible;
 	}
 	
-	public final Class getTargetClass() {
+	public final Class<?> getTargetClass() {
 		return targetClass;
 	}
 
@@ -158,8 +156,7 @@ public class ContextSwappableTargetSource implements TargetSource, InitializingB
 
 	protected Object resolveTarget(final String context) {
 		Object target = null;
-		for (Iterator it = this.registries.iterator(); it.hasNext();) {
-			TargetRegistry registry = (TargetRegistry) it.next();
+		for (TargetRegistry<?> registry : this.registries) {
 			logger.debug("Using '{}' to lookup '{}'.", registry, context);
 			target= registry.getTarget(context);
 			if (target != null) {
@@ -190,6 +187,7 @@ public class ContextSwappableTargetSource implements TargetSource, InitializingB
 				this.registries.addAll(matchingBeans.values());
 				Collections.sort(this.registries, new OrderComparator());
 			} else {
+				@SuppressWarnings("rawtypes")
 				BeanFactoryTargetRegistry<?> registry = new BeanFactoryTargetRegistry();
 				registry.setBeanFactory(this.context);
 				this.registries.add(registry);

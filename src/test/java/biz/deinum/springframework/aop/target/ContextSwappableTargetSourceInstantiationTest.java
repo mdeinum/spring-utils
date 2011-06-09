@@ -1,13 +1,14 @@
 package biz.deinum.springframework.aop.target;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import javax.sql.DataSource;
 
 import org.junit.Test;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.context.support.GenericApplicationContext;
-import org.springframework.test.annotation.ExpectedException;
 
-import biz.deinum.springframework.aop.target.ContextSwappableTargetSource;
 import biz.deinum.springframework.aop.target.registry.impl.BeanFactoryTargetRegistry;
 import biz.deinum.springframework.aop.target.registry.impl.MapTargetRegistry;
 
@@ -48,7 +49,7 @@ public class ContextSwappableTargetSourceInstantiationTest {
 	@Test(expected=IllegalArgumentException.class)
 	public void targetClassAndRegistryAndNullDefaultTargetSet() throws Exception {
 		ContextSwappableTargetSource target = new ContextSwappableTargetSource(javax.sql.DataSource.class);
-		target.setTargetRegistry(new MapTargetRegistry());
+		target.setTargetRegistry(new MapTargetRegistry<DataSource>());
 		target.setAlwaysReturnTarget(true);
 		target.afterPropertiesSet();
 	}

@@ -11,7 +11,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class BeanFactoryTargetRegistryTest {
 
-	private BeanFactoryTargetRegistry registry = new BeanFactoryTargetRegistry();
+	private BeanFactoryTargetRegistry<?> registry = new BeanFactoryTargetRegistry();
 	private BeanFactory bf;
 	
 	@Before

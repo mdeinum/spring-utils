@@ -17,9 +17,10 @@ import org.springframework.validation.Errors;
  */
 public abstract class AbstractSimpleClassMappingValidator extends AbstractValidator implements InitializingBean {
 	private Logger logger = LoggerFactory.getLogger(AbstractSimpleClassMappingValidator.class);
-	private Class supportedClass;
+	private Class<?> supportedClass;
 	protected String field;
 	
+	@SuppressWarnings("rawtypes")
 	public final boolean supports(final Class clazz) {
 		return supportedClass.isAssignableFrom(clazz);
 	}
@@ -33,7 +34,7 @@ public abstract class AbstractSimpleClassMappingValidator extends AbstractValida
 		return errors.getFieldValue(field);
 	}
 	
-	public final void setSupportedClass(final Class supportedClass) {
+	public final void setSupportedClass(final Class<?> supportedClass) {
 		logger.debug("supportedClass={}", supportedClass.getName());
 		this.supportedClass=supportedClass;
 	}

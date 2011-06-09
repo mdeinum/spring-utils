@@ -3,6 +3,7 @@ package biz.deinum.springframework.validation;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.springframework.util.ClassUtils;
 import org.springframework.validation.Errors;
@@ -12,7 +13,7 @@ import org.springframework.validation.Errors;
  * @author mdeinum
  */
 public abstract class AbstractClassMappingValidator extends AbstractValidator {
-    private Map mappings = new HashMap();
+    private Map<Class<?>, String> mappings = new HashMap<Class<?>, String>();
 
     /**
      * Check all the mappings assigned to this validator. If one of the classes
@@ -20,7 +21,8 @@ public abstract class AbstractClassMappingValidator extends AbstractValidator {
      * 
      * @return <code>true</code> when supported, <code>false</code> otherwise
      */
-    public final boolean supports(final Class clazz) {
+    @SuppressWarnings("rawtypes")
+	public final boolean supports(final Class clazz) {
     	Iterator keyIter = mappings.keySet().iterator();
     	boolean supports = false;
     	while (keyIter.hasNext() && !supports) {
@@ -36,12 +38,11 @@ public abstract class AbstractClassMappingValidator extends AbstractValidator {
      * @return
      */
     protected final String getFieldName(final Object target) {
-    	Iterator keyIter = mappings.keySet().iterator();
     	String fieldName = null;
-    	while (keyIter.hasNext() && fieldName == null) {
-    		Class targetClazz = (Class) keyIter.next();
-    		if (ClassUtils.isAssignable(targetClazz, target.getClass())) {
-    			fieldName = (String) mappings.get(targetClazz);
+    	for (Entry<Class<?>, String> entry : mappings.entrySet()) {
+    		if (ClassUtils.isAssignable(entry.getKey(), target.getClass())) {
+    			fieldName = entry.getValue();
+    			break;
     		}
     	}
     	
@@ -57,7 +58,7 @@ public abstract class AbstractClassMappingValidator extends AbstractValidator {
     	return errors.getFieldValue(field);
     }
     
-    public final void setMappings(final Map mappings) {
+    public final void setMappings(final Map<Class<?>, String> mappings) {
         this.mappings = mappings;
     }
 }
