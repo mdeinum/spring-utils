@@ -1,3 +1,18 @@
+/*
+ * Copyright 2007-2011 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package biz.deinum.springframework.web.support;
 
 import java.util.Collections;
@@ -19,33 +34,33 @@ public final class URLBuilder {
 
 	private String baseURL;
 
-	private Map<String, String> paramMap = new LinkedHashMap<String, String>();
+	private final Map<String, String> paramMap = new LinkedHashMap<String, String>();
 
-	public URLBuilder(String baseURL) {
+	public URLBuilder(final String baseURL) {
 		super();
-		parseUrl(baseURL);
+		this.parseUrl(baseURL);
 
 	}
 
-	private void parseUrl(String url) {
+	private void parseUrl(final String url) {
 		int num = url.indexOf("?");
 		String params = "";
 
 		if (num > 0) {
-			baseURL = url.substring(0, num);
+			this.baseURL = url.substring(0, num);
 			params = url.substring(++num);
 		} else {
-			baseURL = url;
+			this.baseURL = url;
 		}
 
 		if (StringUtils.hasLength(params)) {
 			final StringTokenizer tokenizer = new StringTokenizer(params, "&");
 			while (tokenizer.hasMoreTokens()) {
-				String parameter = tokenizer.nextToken();
+				final String parameter = tokenizer.nextToken();
 				int index = parameter.indexOf("=");
-				String key = parameter.substring(0, index);
-				String value = parameter.substring(++index);
-				paramMap.put(key, value);
+				final String key = parameter.substring(0, index);
+				final String value = parameter.substring(++index);
+				this.paramMap.put(key, value);
 			}
 		}
 	}
@@ -57,23 +72,23 @@ public final class URLBuilder {
 	 * @param value the value
 	 * @return return this 
 	 */
-	public URLBuilder addParam(String key, String value) {
-		paramMap.put(key, value);
+	public URLBuilder addParam(final String key, final String value) {
+		this.paramMap.put(key, value);
 		return this;
 	}
 
 	public Map<String, String> getParams() {
-		return Collections.unmodifiableMap(paramMap);
+		return Collections.unmodifiableMap(this.paramMap);
 	}
 
 	public String getBaseURL() {
-		return baseURL;
+		return this.baseURL;
 	}
 
 	public String getURL() {
-		final StringBuilder builder = new StringBuilder(baseURL);
+		final StringBuilder builder = new StringBuilder(this.baseURL);
 		char c = '?';
-		for (Entry<String, String> entry : paramMap.entrySet()) {
+		for (final Entry<String, String> entry : this.paramMap.entrySet()) {
 			builder.append(c).append(entry.getKey()).append('=').append(entry.getValue());
 			c = '&';
 		}

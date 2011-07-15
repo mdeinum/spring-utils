@@ -1,5 +1,21 @@
+/*
+ * Copyright 2007-2011 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package biz.deinum.springframework.aop.target;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -41,36 +57,36 @@ import biz.deinum.springframework.core.ContextHolder;
  */
 public class ContextSwappableTargetSource implements TargetSource, InitializingBean, ApplicationContextAware {
 	private final Logger logger = LoggerFactory.getLogger(ContextSwappableTargetSource.class);
-	
-	/** The TargetRegistries used to lookup the desired target */ 
+
+	/** The TargetRegistries used to lookup the desired target */
 	private final List<TargetRegistry<?>> registries = new LinkedList<TargetRegistry<?>>();
-	
+
 	/** The type of class this TargetSource supports */
-	private Class<?> targetClass;
-	
+	private final Class<?> targetClass;
+
 	/** Should we always return a value, if <code>true</code>, defaultTarget must also be set */
 	private boolean alwaysReturnTarget = false;
-	
+
 	/** The defaultObject to return if <code>alwaysReturnTarget</code> is true */
 	private Object defaultTarget;
-	
+
 	/** The targetPostProcessor to use (optional). */
 	private TargetPostProcessor targetPostProcessor;
-	
+
 	/** The ApplicationContext we are defined in */
 	private ApplicationContext context;
-	
+
 	/**
 	 * Constructor for the {@link ContextSwappableTargetSource} class. It takes a 
 	 * Class as a parameter.
 	 * 
 	 * @param targetClass The Class which this TargetSource represents.
 	 */
-	public ContextSwappableTargetSource(Class<?> targetClass) {
+	public ContextSwappableTargetSource(final Class<?> targetClass) {
 		super();
-		this.targetClass=targetClass;
+		this.targetClass = targetClass;
 	}
-	
+
 	/**
 	 * Locate and return the target for the current context.
 	 * 
@@ -85,26 +101,27 @@ public class ContextSwappableTargetSource implements TargetSource, InitializingB
 	 */
 
 	public Object getTarget() throws Exception {
-        String contextName = ContextHolder.getContext();
-    	logger.debug("Current context: '{}'", contextName);
-        
-        Object target = getTarget(contextName);
+		final String contextName = ContextHolder.getContext();
+		this.logger.debug("Current context: '{}'", contextName);
 
-        if (target == null) {
-        	logger.error("Cannot locate a target of type '{}' for context '{}'", targetClass.getName(), contextName);
-        	throw new TargetLookupFailureException("Cannot locate a target for context '"+contextName+"'");
-        }
-        
-        if (!targetClass.isAssignableFrom(target.getClass())) {
-        	throw new TargetLookupFailureException("The target for '"+contextName+"' is not of the required type." + 
-        			"Expected '"+targetClass.getName()+"' and got '"+target.getClass().getName()+"'");
-        }
-        
-        if (isEligibleForPostProcessing(target)) {
-        	targetPostProcessor.postProcess(target);
-        }
-        
-        return target;
+		final Object target = this.getTarget(contextName);
+
+		if (target == null) {
+			this.logger.error("Cannot locate a target of type '{}' for context '{}'", this.targetClass.getName(),
+					contextName);
+			throw new TargetLookupFailureException("Cannot locate a target for context '" + contextName + "'");
+		}
+
+		if (!this.targetClass.isAssignableFrom(target.getClass())) {
+			throw new TargetLookupFailureException("The target for '" + contextName + "' is not of the required type."
+					+ "Expected '" + this.targetClass.getName() + "' and got '" + target.getClass().getName() + "'");
+		}
+
+		if (this.isEligibleForPostProcessing(target)) {
+			this.targetPostProcessor.postProcess(target);
+		}
+
+		return target;
 
 	}
 
@@ -117,22 +134,22 @@ public class ContextSwappableTargetSource implements TargetSource, InitializingB
 	 * @param target
 	 * @return
 	 */
-	protected boolean isEligibleForPostProcessing(Object target) {
+	protected boolean isEligibleForPostProcessing(final Object target) {
 		boolean eligible = false;
-		if (target != null && target != defaultTarget) {
-			eligible = (targetPostProcessor != null && targetPostProcessor.supports(target.getClass()));
+		if (target != null && target != this.defaultTarget) {
+			eligible = (this.targetPostProcessor != null && this.targetPostProcessor.supports(target.getClass()));
 		}
 		return eligible;
 	}
-	
+
 	public final Class<?> getTargetClass() {
-		return targetClass;
+		return this.targetClass;
 	}
 
 	public final boolean isStatic() {
 		return false;
 	}
-	
+
 	/**
 	 * Gets the targetobject from the configured {@link TargetRegistry}. If no
 	 * target is found and <code>alwaysReturnTarget</code> is set to <code>
@@ -146,82 +163,85 @@ public class ContextSwappableTargetSource implements TargetSource, InitializingB
 	 * @see TargetRegistry#getTarget(String)
 	 */
 	private Object getTarget(final String context) {
-		Object target = resolveTarget(context);
-		if (target == null && alwaysReturnTarget) {
-			logger.debug("Return default target for context '{}'", context);
-			target = defaultTarget;
+		Object target = this.resolveTarget(context);
+		if (target == null && this.alwaysReturnTarget) {
+			this.logger.debug("Return default target for context '{}'", context);
+			target = this.defaultTarget;
 		}
 		return target;
 	}
 
 	protected Object resolveTarget(final String context) {
 		Object target = null;
-		for (TargetRegistry<?> registry : this.registries) {
-			logger.debug("Using '{}' to lookup '{}'.", registry, context);
-			target= registry.getTarget(context);
+		for (final TargetRegistry<?> registry : this.registries) {
+			this.logger.debug("Using '{}' to lookup '{}'.", registry, context);
+			target = registry.getTarget(context);
 			if (target != null) {
 				break;
 			}
 		}
 		return target;
 	}
-	
-	public void releaseTarget(final Object target) throws Exception {}
+
+	public void releaseTarget(final Object target) throws Exception {
+	}
 
 	public final void afterPropertiesSet() throws Exception {
-		Assert.notNull(targetClass, "TargetClass property must be set!");
-		
-		initTargetRegistries();
-		
-		if (alwaysReturnTarget) {
-			Assert.notNull(defaultTarget, "The defaultTarget property is null, while alwaysReturnTarget is set to true. " +
-					"When alwaysReturnTarget is set to true a defaultTarget must be set!");
+		Assert.notNull(this.targetClass, "TargetClass property must be set!");
+
+		this.initTargetRegistries();
+
+		if (this.alwaysReturnTarget) {
+			Assert.notNull(this.defaultTarget,
+					"The defaultTarget property is null, while alwaysReturnTarget is set to true. "
+							+ "When alwaysReturnTarget is set to true a defaultTarget must be set!");
 		}
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	private void initTargetRegistries() {
 		if (this.registries.isEmpty()) {
-			Map<String, TargetRegistry<?>> matchingBeans = BeanFactoryUtils.beansOfTypeIncludingAncestors(context, TargetRegistry.class, true, false);
+			final Map<String, ? extends TargetRegistry> matchingBeans = BeanFactoryUtils.beansOfTypeIncludingAncestors(
+					this.context, TargetRegistry.class, true, false);
 			if (!matchingBeans.isEmpty()) {
-				this.registries.addAll(matchingBeans.values());
+				this.registries.addAll((Collection<? extends TargetRegistry<?>>) matchingBeans.values());
 				Collections.sort(this.registries, new OrderComparator());
 			} else {
 				@SuppressWarnings("rawtypes")
-				BeanFactoryTargetRegistry<?> registry = new BeanFactoryTargetRegistry();
+				final BeanFactoryTargetRegistry<?> registry = new BeanFactoryTargetRegistry();
 				registry.setBeanFactory(this.context);
 				this.registries.add(registry);
 			}
 		}
 	}
-	
-	public final void setAlwaysReturnTarget(final boolean alwaysReturnTarget) {
-		this.alwaysReturnTarget=alwaysReturnTarget;
-	}
-	
-    public final void setDefaultTarget(final Object defaultTarget) {
-        this.defaultTarget=defaultTarget;
-    }
-	
-    public final void setTargetRegistry(final TargetRegistry<?> registry) {
-    	this.registries.clear();
-    	this.registries.add(registry);
-    }
-    
-    public final void setTargetRegistries(final List<TargetRegistry<?>> registries) {
-    	this.registries.addAll(registries);
-    }
-    
-    public final void setTargetPostProcessor(final TargetPostProcessor targetPostProcessor) {
-    	this.targetPostProcessor=targetPostProcessor;
-    }
-    
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-    	this.context=applicationContext;
-    }
 
-    List<TargetRegistry<?>> getTargetRegistries() {
-    	return this.registries;
-    }
-    
+	public final void setAlwaysReturnTarget(final boolean alwaysReturnTarget) {
+		this.alwaysReturnTarget = alwaysReturnTarget;
+	}
+
+	public final void setDefaultTarget(final Object defaultTarget) {
+		this.defaultTarget = defaultTarget;
+	}
+
+	public final void setTargetRegistry(final TargetRegistry<?> registry) {
+		this.registries.clear();
+		this.registries.add(registry);
+	}
+
+	public final void setTargetRegistries(final List<TargetRegistry<?>> registries) {
+		this.registries.addAll(registries);
+	}
+
+	public final void setTargetPostProcessor(final TargetPostProcessor targetPostProcessor) {
+		this.targetPostProcessor = targetPostProcessor;
+	}
+
+	public void setApplicationContext(final ApplicationContext applicationContext) throws BeansException {
+		this.context = applicationContext;
+	}
+
+	List<TargetRegistry<?>> getTargetRegistries() {
+		return this.registries;
+	}
+
 }

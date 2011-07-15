@@ -1,54 +1,48 @@
 package biz.deinum.springframework.aop.target.registry.impl;
 
-import static org.easymock.EasyMock.*;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-import org.easymock.EasyMock;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import biz.deinum.springframework.aop.target.registry.TargetRegistry;
 
-
+@RunWith(MockitoJUnitRunner.class)
 public class SimpleCachingTargetRegistryTest {
 
+	@Mock
 	private TargetRegistry target;
 	private SimpleCachingTargetRegistry cachingRegistry;
-	
+
 	@Before
 	public void setup() {
-		target = EasyMock.createMock(TargetRegistry.class);
-		cachingRegistry = new SimpleCachingTargetRegistry(target);
+		this.cachingRegistry = new SimpleCachingTargetRegistry(this.target);
 	}
-	
-	@After
-	public void after() {
-		EasyMock.verify(target);
-	}
-	
+
 	@Test
 	public void singleCall() {
-		DummyTarget dummyTarget = new DummyTarget();
-		expect(target.getTarget("test")).andReturn(dummyTarget);
-		expectLastCall();
-		replay(target);
-		Object result = cachingRegistry.getTarget("test");
+		final DummyTarget dummyTarget = new DummyTarget();
+		when(this.target.getTarget("test")).thenReturn(dummyTarget);
+		final Object result = this.cachingRegistry.getTarget("test");
 		assertEquals(dummyTarget, result);
+		verify(this.target, times(1)).getTarget("test");
 	}
 
 	@Test
 	public void repeatedCall() {
-		DummyTarget dummyTarget = new DummyTarget();
-		expect(target.getTarget("test")).andReturn(dummyTarget);
-		expectLastCall();
-		replay(target);
-		Object result = cachingRegistry.getTarget("test");
+		final DummyTarget dummyTarget = new DummyTarget();
+		when(this.target.getTarget("test")).thenReturn(dummyTarget);
+		final Object result = this.cachingRegistry.getTarget("test");
 		assertEquals(dummyTarget, result);
-		Object result2 = cachingRegistry.getTarget("test");
+		final Object result2 = this.cachingRegistry.getTarget("test");
 		assertEquals(dummyTarget, result2);
 		assertEquals(result, result2);
 	}
 
-	
 }

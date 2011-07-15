@@ -1,87 +1,84 @@
 package biz.deinum.springframework.aop.target;
+
 import static junit.framework.Assert.assertEquals;
-import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.isA;
-import static org.easymock.EasyMock.replay;
-import static org.easymock.EasyMock.verify;
+import static org.mockito.Matchers.isA;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 
-import org.easymock.EasyMock;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.context.support.GenericApplicationContext;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import biz.deinum.springframework.aop.target.registry.TargetPostProcessor;
 import biz.deinum.springframework.aop.target.registry.TargetRegistry;
 import biz.deinum.springframework.core.ContextHolder;
 
-
+@RunWith(MockitoJUnitRunner.class)
 public class ContextSwappableTargetSourceTest {
 
 	private static final String CONTEXT = "test-context";
-	
 	private ContextSwappableTargetSource ts;
+	@Mock
 	private TargetRegistry registry;
+	@Mock
 	private TargetPostProcessor targetPostProcessor;
-	
-	
+
 	@Before
 	public void before() {
-		registry = EasyMock.createMock(TargetRegistry.class);
-		targetPostProcessor = EasyMock.createMock(TargetPostProcessor.class);
-		ts = new ContextSwappableTargetSource(DummyTestInterface.class);
-		ts.setTargetRegistry(registry);
-		ts.setApplicationContext(new GenericApplicationContext());
+		this.ts = new ContextSwappableTargetSource(DummyTestInterface.class);
+		this.ts.setTargetRegistry(this.registry);
+		this.ts.setTargetPostProcessor(this.targetPostProcessor);
 		ContextHolder.setContext(CONTEXT);
 	}
-	
+
 	@After
 	public void after() {
-		EasyMock.reset(registry, targetPostProcessor);
 		ContextHolder.setContext(null);
 	}
-	
-	@Test(expected=TargetLookupFailureException.class)
+
+	@Test(expected = TargetLookupFailureException.class)
 	public void nullResult() throws Exception {
-		expect(registry.getTarget(CONTEXT)).andStubReturn(null);
-		replay(registry);
-		ts.getTarget();
+		when(this.registry.getTarget(CONTEXT)).thenReturn(null);
+		this.ts.getTarget();
+		verify(this.registry, times(1)).getTarget((CONTEXT));
 	}
 
-	
-	@Test(expected=TargetLookupFailureException.class)
+	@Test(expected = TargetLookupFailureException.class)
 	public void objectOfWrongType() throws Exception {
-		expect(registry.getTarget(CONTEXT)).andStubReturn(new ArrayList());
-		replay(registry);
-		ts.getTarget();		
+		when(this.registry.getTarget(CONTEXT)).thenReturn(new ArrayList());
+		this.ts.getTarget();
 	}
-	
+
 	@Test
 	public void nullObjectWithDefaultTarget() throws Exception {
-		DummyTestInterface defaultTarget = new DummyTestInterface() {};
-		ts.setAlwaysReturnTarget(true);
-		ts.setDefaultTarget(defaultTarget);
-		expect(registry.getTarget(CONTEXT)).andStubReturn(null);
-		replay(registry, targetPostProcessor);
-		Object target = ts.getTarget();
-		assertEquals(defaultTarget, target);		
-		verify(registry, targetPostProcessor);
+		final DummyTestInterface defaultTarget = new DummyTestInterface() {
+		};
+		this.ts.setAlwaysReturnTarget(true);
+		this.ts.setDefaultTarget(defaultTarget);
+		when(this.registry.getTarget(CONTEXT)).thenReturn(null);
+		final Object target = this.ts.getTarget();
+		assertEquals(defaultTarget, target);
 	}
-	
+
 	@Test
 	public void callingPostProcessor() throws Exception {
-		DummyTestInterface target = new DummyTestInterface() {};
-		ts.setTargetPostProcessor(targetPostProcessor);
-		
-		expect(registry.getTarget(CONTEXT)).andStubReturn(target);
-		expect(targetPostProcessor.supports(isA(Class.class))).andStubReturn(Boolean.TRUE);
-		targetPostProcessor.postProcess(target);
-		replay(registry, targetPostProcessor);
-		assertEquals(target, ts.getTarget());
-		verify(registry, targetPostProcessor);
+		final DummyTestInterface target = new DummyTestInterface() {
+		};
+		this.ts.setTargetPostProcessor(this.targetPostProcessor);
+
+		when(this.registry.getTarget(CONTEXT)).thenReturn(target);
+		when(this.targetPostProcessor.supports(isA(Class.class))).thenReturn(Boolean.TRUE);
+		this.targetPostProcessor.postProcess(target);
+		assertEquals(target, this.ts.getTarget());
+
+		verify(this.registry, times(1)).getTarget(CONTEXT);
+		verify(this.targetPostProcessor, times(1)).supports(isA(Class.class));
 	}
-	
-	
+
 }
