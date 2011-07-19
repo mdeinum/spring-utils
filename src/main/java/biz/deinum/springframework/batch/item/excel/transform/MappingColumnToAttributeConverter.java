@@ -26,24 +26,24 @@ import com.google.common.collect.HashBiMap;
  */
 public class MappingColumnToAttributeConverter implements ColumnToAttributeConverter {
 
-	private final BiMap<String, String> mapping = HashBiMap.create();
+    private final BiMap<String, String> mapping = HashBiMap.create();
 
-	public String toAttribute(final String column) {
-		if (this.mapping.containsKey(column)) {
-			return this.mapping.get(column);
-		}
-		return column;
-	}
+    public String toAttribute(final String column) {
+        if (this.mapping.containsKey(column)) {
+            return this.mapping.get(column);
+        }
+        return column;
+    }
 
-	public String toColumn(final String attribute) {
-		if (this.mapping.containsValue(attribute)) {
-			return this.mapping.inverse().get(attribute);
-		}
-		return attribute;
-	}
+    public String toColumn(final String attribute) {
+        if (this.mapping.containsValue(attribute)) {
+            return this.mapping.inverse().get(attribute);
+        }
+        return attribute;
+    }
 
-	public void setMappings(final Map<String, String> mappings) {
-		this.mapping.clear();
-		this.mapping.putAll(mappings);
-	}
+    public void setMappings(final Map<String, String> mappings) {
+        this.mapping.clear();
+        this.mapping.putAll(mappings);
+    }
 }

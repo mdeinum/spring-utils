@@ -21,20 +21,20 @@
  */
 public interface ColumnToAttributeConverter {
 
-	/**
-	 * Convert a column name to an attribute name.
-	 * 
-	 * @param column to convert
-	 * @return the attribute name
-	 */
-	String toAttribute(String column);
+    /**
+     * Convert a column name to an attribute name.
+     * 
+     * @param column to convert
+     * @return the attribute name
+     */
+    String toAttribute(String column);
 
-	/**
-	 * Convert an attribute name to a column name.
-	 * 
-	 * @param attribute to convert
-	 * @return the column name
-	 */
-	String toColumn(String attribute);
+    /**
+     * Convert an attribute name to a column name.
+     * 
+     * @param attribute to convert
+     * @return the column name
+     */
+    String toColumn(String attribute);
 
 }

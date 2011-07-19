@@ -12,10 +12,9 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */package biz.deinum.springframework.batch.item.excel;
+ */
 
-import jxl.Cell;
-import jxl.Sheet;
+package biz.deinum.springframework.batch.item.excel;
 
 /**
  * Callback to handle skipped lines. Useful for header/footer processing.
@@ -24,6 +23,6 @@ import jxl.Sheet;
  */
 public interface RowCallbackHandler {
 
-	void handleRow(Sheet sheet, Cell[] row);
+    void handleRow(Sheet sheet, String[] row);
 
 }

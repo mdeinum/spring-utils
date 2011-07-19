@@ -31,38 +31,38 @@ import org.springframework.batch.item.UnexpectedInputException;
  */
 public class SynchronizedItemReader<T> implements ItemStreamReader<T> {
 
-	private final ItemReader<T> delegate;
+    private final ItemReader<T> delegate;
 
-	/**
-	 * 
-	 * @param delegate delegate ItemReader which does the actual work.
-	 */
-	public SynchronizedItemReader(final ItemReader<T> delegate) {
-		super();
-		this.delegate = delegate;
-	}
+    /**
+     * 
+     * @param delegate delegate ItemReader which does the actual work.
+     */
+    public SynchronizedItemReader(final ItemReader<T> delegate) {
+        super();
+        this.delegate = delegate;
+    }
 
-	public synchronized T read() throws Exception, UnexpectedInputException, ParseException,
-			NonTransientResourceException {
-		return this.delegate.read();
-	}
+    public synchronized T read() throws Exception, UnexpectedInputException, ParseException,
+            NonTransientResourceException {
+        return this.delegate.read();
+    }
 
-	public void open(final ExecutionContext executionContext) throws ItemStreamException {
-		if (this.delegate instanceof ItemStream) {
-			((ItemStream) this.delegate).open(executionContext);
-		}
-	}
+    public void open(final ExecutionContext executionContext) throws ItemStreamException {
+        if (this.delegate instanceof ItemStream) {
+            ((ItemStream) this.delegate).open(executionContext);
+        }
+    }
 
-	public void update(final ExecutionContext executionContext) throws ItemStreamException {
-		if (this.delegate instanceof ItemStream) {
-			((ItemStream) this.delegate).update(executionContext);
-		}
-	}
+    public void update(final ExecutionContext executionContext) throws ItemStreamException {
+        if (this.delegate instanceof ItemStream) {
+            ((ItemStream) this.delegate).update(executionContext);
+        }
+    }
 
-	public void close() throws ItemStreamException {
-		if (this.delegate instanceof ItemStream) {
-			((ItemStream) this.delegate).close();
-		}
+    public void close() throws ItemStreamException {
+        if (this.delegate instanceof ItemStream) {
+            ((ItemStream) this.delegate).close();
+        }
 
-	}
+    }
 }

@@ -12,10 +12,8 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */package biz.deinum.springframework.batch.item.excel.mapping;
-
-import jxl.Cell;
-import jxl.Sheet;
+ */
+package biz.deinum.springframework.batch.item.excel.mapping;
 
 import org.springframework.batch.item.file.mapping.FieldSetMapper;
 import org.springframework.batch.item.file.transform.FieldSet;
@@ -23,6 +21,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
 import biz.deinum.springframework.batch.item.excel.RowMapper;
+import biz.deinum.springframework.batch.item.excel.Sheet;
 import biz.deinum.springframework.batch.item.excel.transform.DefaultRowTokenizer;
 import biz.deinum.springframework.batch.item.excel.transform.RowTokenizer;
 
@@ -34,28 +33,28 @@ import biz.deinum.springframework.batch.item.excel.transform.RowTokenizer;
  */
 public class DefaultRowMapper<T> implements RowMapper<T>, InitializingBean {
 
-	private RowTokenizer rowTokenizer = new DefaultRowTokenizer();
-	private FieldSetMapper<T> fieldSetMapper;
+    private RowTokenizer rowTokenizer = new DefaultRowTokenizer();
+    private FieldSetMapper<T> fieldSetMapper;
 
-	public T mapRow(final Sheet sheet, final Cell[] row, final int rowNum) throws Exception {
-		return this.fieldSetMapper.mapFieldSet(this.rowTokenizer.tokenize(sheet, row));
-	}
+    public T mapRow(final Sheet sheet, final String[] row, final int rowNum) throws Exception {
+        return this.fieldSetMapper.mapFieldSet(this.rowTokenizer.tokenize(sheet, row));
+    }
 
-	public void setFieldSetMapper(final FieldSetMapper<T> fieldSetMapper) {
-		this.fieldSetMapper = fieldSetMapper;
-	}
+    public void setFieldSetMapper(final FieldSetMapper<T> fieldSetMapper) {
+        this.fieldSetMapper = fieldSetMapper;
+    }
 
-	/**
-	 * Set the {@link RowTokenizer} to use to create a {@link FieldSet}. Default uses the {@link DefaultRowTokenizer}.
-	 * 
-	 * @param rowTokenizer to use
-	 */
-	public void setRowTokenizer(final RowTokenizer rowTokenizer) {
-		this.rowTokenizer = rowTokenizer;
-	}
+    /**
+     * Set the {@link RowTokenizer} to use to create a {@link FieldSet}. Default uses the {@link DefaultRowTokenizer}.
+     * 
+     * @param rowTokenizer to use
+     */
+    public void setRowTokenizer(final RowTokenizer rowTokenizer) {
+        this.rowTokenizer = rowTokenizer;
+    }
 
-	public void afterPropertiesSet() throws Exception {
-		Assert.notNull(this.rowTokenizer, "The RowTokenizer must be set");
-		Assert.notNull(this.fieldSetMapper, "The FieldSetMapper must be set");
-	}
+    public void afterPropertiesSet() throws Exception {
+        Assert.notNull(this.rowTokenizer, "The RowTokenizer must be set");
+        Assert.notNull(this.fieldSetMapper, "The FieldSetMapper must be set");
+    }
 }

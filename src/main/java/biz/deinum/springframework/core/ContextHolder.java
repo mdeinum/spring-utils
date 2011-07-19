@@ -26,15 +26,15 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class ContextHolder {
 
-	private static final ThreadLocal<String> holder = new ThreadLocal<String>();
+    private static final ThreadLocal<String> holder = new ThreadLocal<String>();
 
-	public static void setContext(final String context) {
-		LoggerFactory.getLogger(ContextHolder.class).debug("context set '{}'", context);
-		holder.set(context);
-	}
+    public static void setContext(final String context) {
+        LoggerFactory.getLogger(ContextHolder.class).debug("context set '{}'", context);
+        holder.set(context);
+    }
 
-	public static String getContext() {
-		return holder.get();
-	}
+    public static String getContext() {
+        return holder.get();
+    }
 
 }

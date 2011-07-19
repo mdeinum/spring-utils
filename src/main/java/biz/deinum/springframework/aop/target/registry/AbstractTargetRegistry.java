@@ -26,40 +26,40 @@ import org.springframework.core.Ordered;
  */
 public abstract class AbstractTargetRegistry<T> implements TargetRegistry<T>, Ordered {
 
-	private TargetRegistry<T> parent = null;
+    private TargetRegistry<T> parent = null;
 
-	private int order;
+    private int order;
 
-	public final void setParentRegistry(final TargetRegistry<T> registry) {
-		this.parent = registry;
-	}
+    public final void setParentRegistry(final TargetRegistry<T> registry) {
+        this.parent = registry;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public final T getTarget(final String context) {
-		T target = this.getTargetInternal(context);
-		if (target == null && this.parent != null) {
-			target = this.parent.getTarget(context);
-		}
-		return target;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public final T getTarget(final String context) {
+        T target = this.getTargetInternal(context);
+        if (target == null && this.parent != null) {
+            target = this.parent.getTarget(context);
+        }
+        return target;
+    }
 
-	public int getOrder() {
-		return this.order;
-	}
+    public int getOrder() {
+        return this.order;
+    }
 
-	public void setOrder(final int order) {
-		this.order = order;
-	}
+    public void setOrder(final int order) {
+        this.order = order;
+    }
 
-	/**
-	 * Retrieve the target. Subclasses must implement this method.
-	 * 
-	 * @param context
-	 * @return
-	 * @see #getTarget(String)
-	 */
-	protected abstract T getTargetInternal(final String context);
+    /**
+     * Retrieve the target. Subclasses must implement this method.
+     * 
+     * @param context
+     * @return
+     * @see #getTarget(String)
+     */
+    protected abstract T getTargetInternal(final String context);
 
 }

@@ -30,21 +30,21 @@ import biz.deinum.springframework.aop.target.registry.AbstractTargetRegistry;
  */
 public class MapTargetRegistry<T> extends AbstractTargetRegistry<T> {
 
-	private final Map<String, T> targets = Collections.synchronizedMap(new WeakHashMap<String, T>());
+    private final Map<String, T> targets = Collections.synchronizedMap(new WeakHashMap<String, T>());
 
-	public void setTargets(final Map<String, T> targets) {
-		this.targets.clear();
-		this.targets.putAll(targets);
-	}
+    public void setTargets(final Map<String, T> targets) {
+        this.targets.clear();
+        this.targets.putAll(targets);
+    }
 
-	/**
-	 * Retrieves the target from the configured Map. Using the context as a key.
-	 * 
-	 * @return the target or <code>null</code>
-	 */
-	@Override
-	protected T getTargetInternal(final String context) {
-		return this.targets.get(context);
-	}
+    /**
+     * Retrieves the target from the configured Map. Using the context as a key.
+     * 
+     * @return the target or <code>null</code>
+     */
+    @Override
+    protected T getTargetInternal(final String context) {
+        return this.targets.get(context);
+    }
 
 }

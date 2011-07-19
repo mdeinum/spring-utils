@@ -39,48 +39,48 @@ import biz.deinum.springframework.aop.target.registry.TargetRegistry;
  */
 public class JndiLookupTargetRegistry<T> extends JndiLocatorSupport implements TargetRegistry<T> {
 
-	private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-	private String prefix = "";
+    private String prefix = "";
 
-	private String suffix = "";
+    private String suffix = "";
 
-	/**
-	 * {@inheritDoc}
-	 * 
-	 * @see #lookup(String)
-	 */
-	@SuppressWarnings("unchecked")
-	public T getTarget(final String context) {
-		T target = null;
-		try {
-			final String jndiName = this.getJndiName(context);
-			target = (T) this.lookup(jndiName);
-		} catch (final NamingException e) {
-			//Log exception but don't rethrow, that would break the TargetRegistry contract.
-			this.logger.error("Error looking up target for context '{}'", context, e);
-		}
-		return target;
-	}
+    /**
+     * {@inheritDoc}
+     * 
+     * @see #lookup(String)
+     */
+    @SuppressWarnings("unchecked")
+    public T getTarget(final String context) {
+        T target = null;
+        try {
+            final String jndiName = this.getJndiName(context);
+            target = (T) this.lookup(jndiName);
+        } catch (final NamingException e) {
+            //Log exception but don't rethrow, that would break the TargetRegistry contract.
+            this.logger.error("Error looking up target for context '{}'", context, e);
+        }
+        return target;
+    }
 
-	/**
-	 * Set the prefix that gets prepended to the context name when building the
-	 * jndiname.
-	 */
-	public void setPrefix(final String prefix) {
-		this.prefix = (prefix != null ? prefix : "");
-	}
+    /**
+     * Set the prefix that gets prepended to the context name when building the
+     * jndiname.
+     */
+    public void setPrefix(final String prefix) {
+        this.prefix = (prefix != null ? prefix : "");
+    }
 
-	/**
-	 * Set the suffix that gets appended to the context name when building the
-	 * jndiname.
-	 */
-	public void setSuffix(final String suffix) {
-		this.suffix = (suffix != null ? suffix : "");
-	}
+    /**
+     * Set the suffix that gets appended to the context name when building the
+     * jndiname.
+     */
+    public void setSuffix(final String suffix) {
+        this.suffix = (suffix != null ? suffix : "");
+    }
 
-	protected String getJndiName(final String context) {
-		return this.prefix + context + this.suffix;
-	}
+    protected String getJndiName(final String context) {
+        return this.prefix + context + this.suffix;
+    }
 
 }

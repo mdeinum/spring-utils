@@ -21,12 +21,12 @@
  */
 public class PassThroughColumnToAttributeConverter implements ColumnToAttributeConverter {
 
-	public String toAttribute(final String column) {
-		return column;
-	}
+    public String toAttribute(final String column) {
+        return column;
+    }
 
-	public String toColumn(final String attribute) {
-		return attribute;
-	}
+    public String toColumn(final String attribute) {
+        return attribute;
+    }
 
 }

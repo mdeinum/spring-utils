@@ -14,21 +14,20 @@
  * limitations under the License.
  */package biz.deinum.springframework.batch.item.excel.mapping;
 
-import jxl.Cell;
-import jxl.Sheet;
 import biz.deinum.springframework.batch.item.excel.RowMapper;
+import biz.deinum.springframework.batch.item.excel.Sheet;
 
 /**
- * Pass through {@link RowMapper} useful for passing the orginal {@link Cell}[]
+ * Pass through {@link RowMapper} useful for passing the orginal String[]
  * back directly rather than a mapped object.
  * 
  * @author marten
  * 
  */
-public class PassThroughRowMapper implements RowMapper<Cell[]> {
+public class PassThroughRowMapper implements RowMapper<String[]> {
 
-	public Cell[] mapRow(final Sheet sheet, final Cell[] row, final int rowNum) throws Exception {
-		return row;
-	}
+    public String[] mapRow(final Sheet sheet, final String[] row, final int rowNum) throws Exception {
+        return row;
+    }
 
 }

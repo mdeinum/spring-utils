@@ -9,20 +9,20 @@ import biz.deinum.springframework.batch.item.excel.transform.PassThroughColumnTo
 
 public class PassThroughColumnToAttributeConverterTests {
 
-	private final PassThroughColumnToAttributeConverter converter = new PassThroughColumnToAttributeConverter();
+    private final PassThroughColumnToAttributeConverter converter = new PassThroughColumnToAttributeConverter();
 
-	@Test
-	public void columnNameShouldRemainTheSame() {
-		final String column = "column";
-		assertEquals(column, this.converter.toAttribute(column));
-		assertNull(this.converter.toAttribute(null));
-	}
+    @Test
+    public void columnNameShouldRemainTheSame() {
+        final String column = "column";
+        assertEquals(column, this.converter.toAttribute(column));
+        assertNull(this.converter.toAttribute(null));
+    }
 
-	@Test
-	public void attributeNameShouldRemainTheSame() {
-		final String attribute = "attribute";
-		assertEquals(attribute, this.converter.toColumn(attribute));
-		assertNull(this.converter.toColumn(null));
-	}
+    @Test
+    public void attributeNameShouldRemainTheSame() {
+        final String attribute = "attribute";
+        assertEquals(attribute, this.converter.toColumn(attribute));
+        assertNull(this.converter.toColumn(null));
+    }
 
 }

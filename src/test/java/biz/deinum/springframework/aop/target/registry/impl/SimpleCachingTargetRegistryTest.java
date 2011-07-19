@@ -16,33 +16,33 @@ import biz.deinum.springframework.aop.target.registry.TargetRegistry;
 @RunWith(MockitoJUnitRunner.class)
 public class SimpleCachingTargetRegistryTest {
 
-	@Mock
-	private TargetRegistry target;
-	private SimpleCachingTargetRegistry cachingRegistry;
+    @Mock
+    private TargetRegistry target;
+    private SimpleCachingTargetRegistry cachingRegistry;
 
-	@Before
-	public void setup() {
-		this.cachingRegistry = new SimpleCachingTargetRegistry(this.target);
-	}
+    @Before
+    public void setup() {
+        this.cachingRegistry = new SimpleCachingTargetRegistry(this.target);
+    }
 
-	@Test
-	public void singleCall() {
-		final DummyTarget dummyTarget = new DummyTarget();
-		when(this.target.getTarget("test")).thenReturn(dummyTarget);
-		final Object result = this.cachingRegistry.getTarget("test");
-		assertEquals(dummyTarget, result);
-		verify(this.target, times(1)).getTarget("test");
-	}
+    @Test
+    public void singleCall() {
+        final DummyTarget dummyTarget = new DummyTarget();
+        when(this.target.getTarget("test")).thenReturn(dummyTarget);
+        final Object result = this.cachingRegistry.getTarget("test");
+        assertEquals(dummyTarget, result);
+        verify(this.target, times(1)).getTarget("test");
+    }
 
-	@Test
-	public void repeatedCall() {
-		final DummyTarget dummyTarget = new DummyTarget();
-		when(this.target.getTarget("test")).thenReturn(dummyTarget);
-		final Object result = this.cachingRegistry.getTarget("test");
-		assertEquals(dummyTarget, result);
-		final Object result2 = this.cachingRegistry.getTarget("test");
-		assertEquals(dummyTarget, result2);
-		assertEquals(result, result2);
-	}
+    @Test
+    public void repeatedCall() {
+        final DummyTarget dummyTarget = new DummyTarget();
+        when(this.target.getTarget("test")).thenReturn(dummyTarget);
+        final Object result = this.cachingRegistry.getTarget("test");
+        assertEquals(dummyTarget, result);
+        final Object result2 = this.cachingRegistry.getTarget("test");
+        assertEquals(dummyTarget, result2);
+        assertEquals(result, result2);
+    }
 
 }

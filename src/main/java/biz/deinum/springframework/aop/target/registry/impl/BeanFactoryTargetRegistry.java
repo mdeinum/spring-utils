@@ -31,53 +31,53 @@ import biz.deinum.springframework.aop.target.registry.AbstractTargetRegistry;
  */
 public class BeanFactoryTargetRegistry<T> extends AbstractTargetRegistry<T> implements BeanFactoryAware {
 
-	private final Logger logger = LoggerFactory.getLogger(BeanFactoryTargetRegistry.class);
+    private final Logger logger = LoggerFactory.getLogger(BeanFactoryTargetRegistry.class);
 
-	private BeanFactory beanFactory;
-	private String prefix = "";
-	private String suffix = "";
+    private BeanFactory beanFactory;
+    private String prefix = "";
+    private String suffix = "";
 
-	public void setPrefix(final String prefix) {
-		Assert.notNull(prefix, "When setting prefix, prefix cannot be null!");
-		this.prefix = prefix;
-	}
+    public void setPrefix(final String prefix) {
+        Assert.notNull(prefix, "When setting prefix, prefix cannot be null!");
+        this.prefix = prefix;
+    }
 
-	public void setSuffix(final String suffix) {
-		Assert.notNull(this.prefix, "When setting suffix, suffix cannot be null!");
-		this.suffix = suffix;
-	}
+    public void setSuffix(final String suffix) {
+        Assert.notNull(this.prefix, "When setting suffix, suffix cannot be null!");
+        this.suffix = suffix;
+    }
 
-	private String getTargetName(final String context) {
-		final String beanName = this.prefix + context + this.suffix;
-		this.logger.debug("TargetName: {}", beanName);
-		return beanName;
-	}
+    private String getTargetName(final String context) {
+        final String beanName = this.prefix + context + this.suffix;
+        this.logger.debug("TargetName: {}", beanName);
+        return beanName;
+    }
 
-	/**
-	 * Gets the target from the ApplicationContext. The name of the bean is being
-	 * constructed with the configured <code>prefix</code> and <code>suffix</code>.
-	 * 
-	 * @return the found object or <code>null</code>
-	 */
-	@Override
-	@SuppressWarnings("unchecked")
-	protected T getTargetInternal(final String context) {
-		final String beanName = this.getTargetName(context);
-		T target = null;
-		try {
-			this.logger.debug("Retrieving bean '{}' from BeanFactory.", beanName);
-			target = (T) this.beanFactory.getBean(beanName);
-		} catch (final BeansException be) {
-			this.logger.warn("Could not retrieve bean '{}'", context, be);
-		}
-		return target;
-	}
+    /**
+     * Gets the target from the ApplicationContext. The name of the bean is being
+     * constructed with the configured <code>prefix</code> and <code>suffix</code>.
+     * 
+     * @return the found object or <code>null</code>
+     */
+    @Override
+    @SuppressWarnings("unchecked")
+    protected T getTargetInternal(final String context) {
+        final String beanName = this.getTargetName(context);
+        T target = null;
+        try {
+            this.logger.debug("Retrieving bean '{}' from BeanFactory.", beanName);
+            target = (T) this.beanFactory.getBean(beanName);
+        } catch (final BeansException be) {
+            this.logger.warn("Could not retrieve bean '{}'", context, be);
+        }
+        return target;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void setBeanFactory(final BeanFactory beanFactory) throws BeansException {
-		this.beanFactory = beanFactory;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void setBeanFactory(final BeanFactory beanFactory) throws BeansException {
+        this.beanFactory = beanFactory;
+    }
 
 }

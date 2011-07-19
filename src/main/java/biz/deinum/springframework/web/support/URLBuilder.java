@@ -32,66 +32,66 @@ import org.springframework.util.StringUtils;
  */
 public final class URLBuilder {
 
-	private String baseURL;
+    private String baseURL;
 
-	private final Map<String, String> paramMap = new LinkedHashMap<String, String>();
+    private final Map<String, String> paramMap = new LinkedHashMap<String, String>();
 
-	public URLBuilder(final String baseURL) {
-		super();
-		this.parseUrl(baseURL);
+    public URLBuilder(final String baseURL) {
+        super();
+        this.parseUrl(baseURL);
 
-	}
+    }
 
-	private void parseUrl(final String url) {
-		int num = url.indexOf("?");
-		String params = "";
+    private void parseUrl(final String url) {
+        int num = url.indexOf("?");
+        String params = "";
 
-		if (num > 0) {
-			this.baseURL = url.substring(0, num);
-			params = url.substring(++num);
-		} else {
-			this.baseURL = url;
-		}
+        if (num > 0) {
+            this.baseURL = url.substring(0, num);
+            params = url.substring(++num);
+        } else {
+            this.baseURL = url;
+        }
 
-		if (StringUtils.hasLength(params)) {
-			final StringTokenizer tokenizer = new StringTokenizer(params, "&");
-			while (tokenizer.hasMoreTokens()) {
-				final String parameter = tokenizer.nextToken();
-				int index = parameter.indexOf("=");
-				final String key = parameter.substring(0, index);
-				final String value = parameter.substring(++index);
-				this.paramMap.put(key, value);
-			}
-		}
-	}
+        if (StringUtils.hasLength(params)) {
+            final StringTokenizer tokenizer = new StringTokenizer(params, "&");
+            while (tokenizer.hasMoreTokens()) {
+                final String parameter = tokenizer.nextToken();
+                int index = parameter.indexOf("=");
+                final String key = parameter.substring(0, index);
+                final String value = parameter.substring(++index);
+                this.paramMap.put(key, value);
+            }
+        }
+    }
 
-	/**
-	 * Add a parameter to the url. Can be used to build urls.
-	 * 
-	 * @param key the name of the parameter
-	 * @param value the value
-	 * @return return this 
-	 */
-	public URLBuilder addParam(final String key, final String value) {
-		this.paramMap.put(key, value);
-		return this;
-	}
+    /**
+     * Add a parameter to the url. Can be used to build urls.
+     * 
+     * @param key the name of the parameter
+     * @param value the value
+     * @return return this 
+     */
+    public URLBuilder addParam(final String key, final String value) {
+        this.paramMap.put(key, value);
+        return this;
+    }
 
-	public Map<String, String> getParams() {
-		return Collections.unmodifiableMap(this.paramMap);
-	}
+    public Map<String, String> getParams() {
+        return Collections.unmodifiableMap(this.paramMap);
+    }
 
-	public String getBaseURL() {
-		return this.baseURL;
-	}
+    public String getBaseURL() {
+        return this.baseURL;
+    }
 
-	public String getURL() {
-		final StringBuilder builder = new StringBuilder(this.baseURL);
-		char c = '?';
-		for (final Entry<String, String> entry : this.paramMap.entrySet()) {
-			builder.append(c).append(entry.getKey()).append('=').append(entry.getValue());
-			c = '&';
-		}
-		return builder.toString();
-	}
+    public String getURL() {
+        final StringBuilder builder = new StringBuilder(this.baseURL);
+        char c = '?';
+        for (final Entry<String, String> entry : this.paramMap.entrySet()) {
+            builder.append(c).append(entry.getKey()).append('=').append(entry.getValue());
+            c = '&';
+        }
+        return builder.toString();
+    }
 }

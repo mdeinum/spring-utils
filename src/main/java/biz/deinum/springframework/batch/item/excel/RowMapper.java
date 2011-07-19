@@ -14,12 +14,8 @@
  * limitations under the License.
  */package biz.deinum.springframework.batch.item.excel;
 
-import jxl.Cell;
-import jxl.Sheet;
-import jxl.Workbook;
-
 /**
- * Map rows from a {@link Workbook} to an object.
+ * Map rows from an excel sheet to an object.
  * 
  * @author Marten Deinum
  *
@@ -27,17 +23,17 @@ import jxl.Workbook;
  */
 public interface RowMapper<T> {
 
-	/**
-	 * Implementations must implement this method to map the provided row to 
-	 * the parameter type T.  The row number represents the number of rows
-	 * into a {@link Sheet} the current line resides.
-	 * 
-	 * @param sheet the current sheet
-	 * @param row to be mapped
-	 * @param rowNumber of the current row
-	 * @return mapped object of type T
-	 * @throws Exception if error occured while parsing.
-	 */
-	T mapRow(Sheet sheet, Cell[] row, int rowNum) throws Exception;
+    /**
+     * Implementations must implement this method to map the provided row to 
+     * the parameter type T.  The row number represents the number of rows
+     * into a {@link Sheet} the current line resides.
+     * 
+     * @param sheet the current sheet
+     * @param row to be mapped
+     * @param rowNumber of the current row
+     * @return mapped object of type T
+     * @throws Exception if error occured while parsing.
+     */
+    T mapRow(Sheet sheet, String[] row, int rowNum) throws Exception;
 
 }

@@ -1,10 +1,9 @@
 package biz.deinum.springframework.batch.item.excel.mapping;
 
-import static org.junit.Assert.assertEquals;
-import jxl.Cell;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
-import org.mockito.Mockito;
 
 /**
  * Tests for {@link PassThroughRowMapper}.
@@ -14,15 +13,18 @@ import org.mockito.Mockito;
  */
 public class PassThroughRowMapperTests {
 
-	private final PassThroughRowMapper rowMapper = new PassThroughRowMapper();
+    private final PassThroughRowMapper rowMapper = new PassThroughRowMapper();
 
-	@Test
-	public void mapRowShouldReturnSameValues() throws Exception {
-		final Cell c1 = Mockito.mock(Cell.class, "c1");
-		final Cell c2 = Mockito.mock(Cell.class, "c2");
-		final Cell[] row = new Cell[] { c1, c2 };
+    @Test
+    public void mapRowShouldReturnSameValues() throws Exception {
+        final String[] row = new String[] { "foo", "bar", "baz" };
 
-		assertEquals(row, this.rowMapper.mapRow(null, row, 0));
-	}
+        assertArrayEquals(row, this.rowMapper.mapRow(null, row, 0));
+    }
+
+    @Test
+    public void mapRowShouldReturnNull() throws Exception {
+        assertNull(this.rowMapper.mapRow(null, null, 0));
+    }
 
 }

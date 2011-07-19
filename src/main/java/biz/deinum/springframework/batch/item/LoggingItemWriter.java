@@ -30,12 +30,12 @@ import org.springframework.batch.item.ItemWriter;
  */
 public class LoggingItemWriter<T> implements ItemWriter<T> {
 
-	private final Logger logger = LoggerFactory.getLogger(LoggingItemWriter.class);
+    private final Logger logger = LoggerFactory.getLogger(LoggingItemWriter.class);
 
-	public void write(final List<? extends T> items) throws Exception {
-		for (final T item : items) {
-			this.logger.trace("Writing item: {}", item);
-		}
-	}
+    public void write(final List<? extends T> items) throws Exception {
+        for (final T item : items) {
+            this.logger.trace("Writing item: {}", item);
+        }
+    }
 
 }

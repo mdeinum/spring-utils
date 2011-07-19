@@ -12,12 +12,12 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */package biz.deinum.springframework.batch.item.excel.transform;
-
-import jxl.Cell;
-import jxl.Sheet;
+ */
+package biz.deinum.springframework.batch.item.excel.transform;
 
 import org.springframework.batch.item.file.transform.FieldSet;
+
+import biz.deinum.springframework.batch.item.excel.Sheet;
 
 /**
  * Interface that is used by framework to convert a Cell[] into a {@link FieldSet}.
@@ -27,5 +27,5 @@ import org.springframework.batch.item.file.transform.FieldSet;
 
 public interface RowTokenizer {
 
-	FieldSet tokenize(Sheet sheet, Cell[] row);
+    FieldSet tokenize(Sheet sheet, String[] row);
 }

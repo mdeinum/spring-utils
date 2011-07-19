@@ -30,31 +30,31 @@ import org.springframework.validation.Errors;
  *
  */
 public abstract class AbstractSimpleClassMappingValidator extends AbstractValidator implements InitializingBean {
-	private final Logger logger = LoggerFactory.getLogger(AbstractSimpleClassMappingValidator.class);
-	private Class<?> supportedClass;
-	protected String field;
+    private final Logger logger = LoggerFactory.getLogger(AbstractSimpleClassMappingValidator.class);
+    private Class<?> supportedClass;
+    protected String field;
 
-	@SuppressWarnings("rawtypes")
-	public final boolean supports(final Class clazz) {
-		return this.supportedClass.isAssignableFrom(clazz);
-	}
+    @SuppressWarnings("rawtypes")
+    public final boolean supports(final Class clazz) {
+        return this.supportedClass.isAssignableFrom(clazz);
+    }
 
-	public void afterPropertiesSet() throws Exception {
-		Assert.notNull(this.supportedClass, "'SupportedClass' must be set!");
-		Assert.notNull(this.field, "'Field' must be set!");
-	}
+    public void afterPropertiesSet() throws Exception {
+        Assert.notNull(this.supportedClass, "'SupportedClass' must be set!");
+        Assert.notNull(this.field, "'Field' must be set!");
+    }
 
-	protected Object getValue(final Errors errors) {
-		return errors.getFieldValue(this.field);
-	}
+    protected Object getValue(final Errors errors) {
+        return errors.getFieldValue(this.field);
+    }
 
-	public final void setSupportedClass(final Class<?> supportedClass) {
-		this.logger.debug("supportedClass={}", supportedClass.getName());
-		this.supportedClass = supportedClass;
-	}
+    public final void setSupportedClass(final Class<?> supportedClass) {
+        this.logger.debug("supportedClass={}", supportedClass.getName());
+        this.supportedClass = supportedClass;
+    }
 
-	public final void setField(final String field) {
-		this.logger.debug("field={}", field);
-		this.field = field;
-	}
+    public final void setField(final String field) {
+        this.logger.debug("field={}", field);
+        this.field = field;
+    }
 }
