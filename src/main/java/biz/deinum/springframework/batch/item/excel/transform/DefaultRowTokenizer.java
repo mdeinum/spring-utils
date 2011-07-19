@@ -40,7 +40,7 @@ public class DefaultRowTokenizer implements RowTokenizer, InitializingBean {
     private String attributeForSheetName = null;
 
     public FieldSet tokenize(final Sheet sheet, final String[] row) {
-        String[] values = new String[row.length];
+        String[] values = new String[sheet.getNumberOfColumns()];
         System.arraycopy(row, 0, values, 0, row.length);
 
         if (this.includeSheetName) {
