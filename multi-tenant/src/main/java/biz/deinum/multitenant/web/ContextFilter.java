@@ -1,0 +1,65 @@
+package biz.deinum.multitenant.web;
+
+import biz.deinum.multitenant.core.ContextHolder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
+/**
+ * Filter which sets the context from the current request. Delegates the actual lookup to a {@code ContextRepository}.
+ *
+ * When no context is found an IllegalStateException is thrown, this can be switched of by setting the
+ * <code>throwExceptionOnMissingContext</code> property.
+ *
+ * @author Marten Deinum
+ */
+public class ContextFilter extends OncePerRequestFilter {
+
+    private final Logger logger = LoggerFactory.getLogger(ContextFilter.class);
+
+    private ContextRepository contextRepository;
+
+    private boolean throwExceptionOnMissingContext = true;
+
+    @Override
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        try {
+            String context = contextRepository.getContext(request, response);
+            logger.debug("Using context: {}", context);
+            if (throwExceptionOnMissingContext && !StringUtils.hasText(context)) {
+                throw new IllegalStateException("Could not determine context for current request!");
+            } else {
+                ContextHolder.setContext(context);
+                filterChain.doFilter(request, response);
+            }
+        } finally {
+            //Always clear the thread local after request processing.
+            ContextHolder.clear();
+        }
+    }
+
+    /**
+     * Configure the <code>ContextRepository</code> to use.
+     *
+     * @param contextRepository
+     */
+    public void setContextRepository(ContextRepository contextRepository) {
+        this.contextRepository = contextRepository;
+    }
+
+    /**
+     * When <code>true</code> (the default) an exception is throw if no context is found for the current request.
+     *
+     * @param throwExceptionOnMissingContext
+     */
+    public void setThrowExceptionOnMissingContext(boolean throwExceptionOnMissingContext) {
+        this.throwExceptionOnMissingContext = throwExceptionOnMissingContext;
+    }
+}
