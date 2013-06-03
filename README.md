@@ -16,9 +16,13 @@ Multi Tenant
 ---------------
 Utilizing the TargetSource and AOP infrastructure of Spring this enables for dynamic switching of basically anything. This has been used in production for switching SessionFactories and/or DataSources based on some request parameter.
 
+Batch
+-----
+Contains a LoggingItemWriter which can be useful to debug problems or for testing purposes. It also contains a SynchronizedItemReader which can be useful if concurrency for reading is needed.
+
 Batch - Excel Item Reader
 --------------------------------
-Item Reader which uses the JExcelApi to parse an biz.deinum.multitenant.batch.excel file. Simply configure the ExcelItemReader as your reader, pass it the resource to read and you are good to go. It was build like the FlatFileItemReader from Spring Batch so it is fully configurable for your liking.
+Spring Batch ItemReaders for reading MS Excel files. Currently has basic implementations for the JExcelAPI and Apache POI. It was build like the FlatFileItemReader from Spring Batch so it is fully configurable for your liking.
 
 Web Services
 ------------
