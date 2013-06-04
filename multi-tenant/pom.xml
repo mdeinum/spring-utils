@@ -35,6 +35,13 @@
             <artifactId>spring-webmvc</artifactId>
             <optional>true</optional>
         </dependency>
+        <!-- Spring Integration Support -->
+        <dependency>
+            <groupId>org.springframework.integration</groupId>
+            <artifactId>spring-integration-core</artifactId>
+            <version>2.2.3.RELEASE</version>
+            <optional>true</optional>
+        </dependency>
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-entitymanager</artifactId>
