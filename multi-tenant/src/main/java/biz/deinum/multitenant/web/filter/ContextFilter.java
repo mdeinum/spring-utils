@@ -1,6 +1,7 @@
-package biz.deinum.multitenant.web;
+package biz.deinum.multitenant.web.filter;
 
 import biz.deinum.multitenant.core.ContextHolder;
+import biz.deinum.multitenant.web.ContextRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
@@ -13,20 +14,27 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
- * Filter which sets the context from the current request. Delegates the actual lookup to a {@code ContextRepository}.
+ * {@code javax.servlet.Filter} which sets the context from the current request. Delegates the actual lookup to a {@code ContextRepository}.
  *
  * When no context is found an IllegalStateException is thrown, this can be switched of by setting the
  * <code>throwExceptionOnMissingContext</code> property.
  *
  * @author Marten Deinum
+ * @since 1.3
+ * @see biz.deinum.multitenant.web.servlet.ContextInterceptor
  */
 public class ContextFilter extends OncePerRequestFilter {
 
     private final Logger logger = LoggerFactory.getLogger(ContextFilter.class);
 
-    private ContextRepository contextRepository;
+    private final ContextRepository contextRepository;
 
     private boolean throwExceptionOnMissingContext = true;
+
+    public ContextFilter(ContextRepository contextRepository) {
+        super();
+        this.contextRepository = contextRepository;
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -43,15 +51,6 @@ public class ContextFilter extends OncePerRequestFilter {
             //Always clear the thread local after request processing.
             ContextHolder.clear();
         }
-    }
-
-    /**
-     * Configure the <code>ContextRepository</code> to use.
-     *
-     * @param contextRepository
-     */
-    public void setContextRepository(ContextRepository contextRepository) {
-        this.contextRepository = contextRepository;
     }
 
     /**
