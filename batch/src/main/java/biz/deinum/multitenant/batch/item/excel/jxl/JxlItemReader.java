@@ -16,16 +16,12 @@
 package biz.deinum.multitenant.batch.item.excel.jxl;
 
 import biz.deinum.multitenant.batch.item.excel.AbstractExcelItemReader;
+import biz.deinum.multitenant.batch.item.excel.Sheet;
 import jxl.Workbook;
 import jxl.read.biff.WorkbookParser;
-
 import org.springframework.batch.item.ItemReader;
-import org.springframework.batch.item.file.ResourceAwareItemReaderItemStream;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.Resource;
 import org.springframework.util.ClassUtils;
-
-import biz.deinum.multitenant.batch.item.excel.Sheet;
 
 /**
  * {@link ItemReader} implementation which uses the JExcelApi to read an Excel
@@ -36,8 +32,7 @@ import biz.deinum.multitenant.batch.item.excel.Sheet;
  * 
  * @param <T> the type
  */
-public class JxlItemReader<T> extends AbstractExcelItemReader<T> implements ResourceAwareItemReaderItemStream<T>,
-        InitializingBean {
+public class JxlItemReader<T> extends AbstractExcelItemReader<T> {
 
     private Workbook workbook;
 
@@ -52,7 +47,7 @@ public class JxlItemReader<T> extends AbstractExcelItemReader<T> implements Reso
     }
 
     @Override
-    protected void doClose() throws Exception {
+    protected void doCloseWorkbook() throws Exception {
         if (this.workbook != null) {
             this.workbook.close();
         }

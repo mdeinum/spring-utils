@@ -14,13 +14,14 @@
  * limitations under the License.
  */package biz.deinum.multitenant.batch.item.excel.transform;
 
-import java.util.Map;
-
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
+import java.util.Map;
+
 /** 
- * {@link ColumnToAttributeConverter} which maps the names to columns and vice versa based on the provide mapping configuration. If a mapping cannot be found it returns the name as is.
+ * {@link ColumnToAttributeConverter} which maps the names to columns and vice versa based on the provide mapping
+ * configuration. If a mapping cannot be found it returns the name as is.
  * 
  * @author Marten Deinum
  */

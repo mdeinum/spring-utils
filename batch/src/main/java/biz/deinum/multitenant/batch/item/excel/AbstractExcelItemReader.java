@@ -26,32 +26,28 @@ import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ObjectUtils;
 
+import java.io.IOException;
+import java.io.InputStream;
+
 /**
  * {@link ItemReader} implementation which uses the JExcelApi to read an Excel
  * file. It will read the file sheet for sheet and row for row. It is based on
  * the {@link org.springframework.batch.item.file.FlatFileItemReader}
- * 
- * @author Marten Deinum
- * 
+ *
  * @param <T> the type
+ * @author Marten Deinum
  */
 public abstract class AbstractExcelItemReader<T> extends AbstractItemCountingItemStreamItemReader<T> implements
         ResourceAwareItemReaderItemStream<T>, InitializingBean {
 
-    private static final Logger LOG = LoggerFactory.getLogger(AbstractExcelItemReader.class);
-
+    protected final Logger logger = LoggerFactory.getLogger(getClass());
     private Resource resource;
-
     private int linesToSkip = 0;
-
     private int currentRow = 0;
     private int currentSheet = 0;
-
     private RowMapper<T> rowMapper;
-
     private RowCallbackHandler skippedRowsCallback;
     private boolean noInput = false;
-
     private boolean strict = true;
 
     public AbstractExcelItemReader() {
@@ -69,7 +65,7 @@ public abstract class AbstractExcelItemReader<T> extends AbstractItemCountingIte
         if (ObjectUtils.isEmpty(row)) {
             this.currentSheet++;
             if (this.currentSheet >= this.getNumberOfSheets()) {
-                LOG.debug("No more sheets in {}.", this.resource.getDescription());
+                logger.debug("No more sheets in {}.", this.resource.getDescription());
                 return null;
             } else {
                 this.currentRow = 0;
@@ -95,7 +91,7 @@ public abstract class AbstractExcelItemReader<T> extends AbstractItemCountingIte
                 throw new IllegalStateException("Input resource must exist (reader is in 'strict' mode): "
                         + this.resource);
             }
-            LOG.warn("Input resource does not exist {}", this.resource.getDescription());
+            logger.warn("Input resource does not exist {}", this.resource.getDescription());
             return;
         }
 
@@ -104,14 +100,14 @@ public abstract class AbstractExcelItemReader<T> extends AbstractItemCountingIte
                 throw new IllegalStateException("Input resource must be readable (reader is in 'strict' mode): "
                         + this.resource);
             }
-            LOG.warn("Input resource is not readable {}", this.resource.getDescription());
+            logger.warn("Input resource is not readable {}", this.resource.getDescription());
             return;
         }
 
         this.noInput = false;
         this.openExcelFile(this.resource);
         this.openSheet();
-        LOG.debug("Opened workbook [{}] with {} sheets.", this.resource.getFilename(), this.getNumberOfSheets());
+        logger.debug("Opened workbook [{}] with {} sheets.", this.resource.getFilename(), this.getNumberOfSheets());
     }
 
     private String[] readRow(final Sheet sheet) {
@@ -124,15 +120,40 @@ public abstract class AbstractExcelItemReader<T> extends AbstractItemCountingIte
 
     private void openSheet() {
         final Sheet sheet = this.getSheet(this.currentSheet);
-        LOG.debug("Opening sheet {}.", sheet.getName());
+        logger.debug("Opening sheet {}.", sheet.getName());
         for (int i = 0; i < this.linesToSkip; i++) {
             final String[] row = this.readRow(sheet);
             if (this.skippedRowsCallback != null) {
                 this.skippedRowsCallback.handleRow(sheet, row);
             }
         }
-        LOG.debug("Openend sheet {}, with {} rows.", sheet.getName(), sheet.getNumberOfRows());
+        logger.debug("Openend sheet {}, with {} rows.", sheet.getName(), sheet.getNumberOfRows());
 
+    }
+
+    @Override
+    protected final void doClose() throws Exception {
+        doCloseWorkbook();
+        if (getResource() != null) {
+            try {
+                InputStream is = getResource().getInputStream();
+                is.close();
+            } catch (IOException ioe) {
+                logger.warn("Exception whilst obtaining or closing the inputstream.", ioe);
+            }
+        }
+    }
+
+    /**
+     * Method which can be overriden by subclasses to do cleanup additional resources.
+     *
+     * @throws Exception
+     */
+    protected void doCloseWorkbook() throws Exception {
+    }
+
+    protected Resource getResource() {
+        return this.resource;
     }
 
     public void setResource(final Resource resource) {
@@ -146,7 +167,7 @@ public abstract class AbstractExcelItemReader<T> extends AbstractItemCountingIte
     /**
      * Set the number of lines to skip. This number is applied to all worksheet
      * in the excel file! default to 0
-     * 
+     *
      * @param linesToSkip
      */
     public void setLinesToSkip(final int linesToSkip) {
@@ -162,6 +183,7 @@ public abstract class AbstractExcelItemReader<T> extends AbstractItemCountingIte
     /**
      * In strict mode the reader will throw an exception on
      * {@link #open(org.springframework.batch.item.ExecutionContext)} if the input resource does not exist.
+     *
      * @param strict true by default
      */
     public void setStrict(final boolean strict) {
