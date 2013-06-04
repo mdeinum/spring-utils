@@ -15,6 +15,8 @@ are required or not. Saves you writing javacode for all those required fields.
 Multi Tenant
 ---------------
 Utilizing the TargetSource and AOP infrastructure of Spring this enables for dynamic switching of basically anything. This has been used in production for switching SessionFactories and/or DataSources based on some request parameter.
+As of Hibernate 4.1 multi-tenant support is build into hibernate, this multi-tenant support also has been integrated into this. Finally we added also support for Spring Integration, there is an interceptor which can be added to your channels to set/get the context from a message header.
+
 
 Batch
 -----
