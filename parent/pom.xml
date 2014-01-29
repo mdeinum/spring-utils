@@ -11,14 +11,15 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <spring.version>3.2.3.RELEASE</spring.version>
-        <spring.ws.version>2.1.2.RELEASE</spring.ws.version>
+        <spring.version>3.2.7.RELEASE</spring.version>
+        <spring.ws.version>2.1.4.RELEASE</spring.ws.version>
+        <spring.security.version>3.1.4.RELEASE</spring.security.version>
         <slf4j.version>1.7.5</slf4j.version>
         <logback.version>1.0.13</logback.version>
-        <spring-batch.version>2.1.8.RELEASE</spring-batch.version>
+        <spring-batch.version>2.2.3.RELEASE</spring-batch.version>
         <mockito.version>1.9.5</mockito.version>
         <guava.version>14.0.1</guava.version>
-        <hibernate.version>4.2.1.Final</hibernate.version>
+        <hibernate.version>4.2.7.Final</hibernate.version>
     </properties>
 
 
@@ -90,6 +91,26 @@
             </dependency>
             <dependency>
                 <groupId>org.springframework</groupId>
+                <artifactId>spring-expression</artifactId>
+                <version>${spring.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-jdbc</artifactId>
+                <version>${spring.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-oxm</artifactId>
+                <version>${spring.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-tx</artifactId>
+                <version>${spring.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
                 <artifactId>spring-web</artifactId>
                 <version>${spring.version}</version>
             </dependency>
@@ -121,6 +142,17 @@
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
                 <version>${guava.version}</version>
+            </dependency>
+            <!-- Spring Security -->
+            <dependency>
+                <groupId>org.springframework.security</groupId>
+                <artifactId>spring-security-core</artifactId>
+                <version>${spring.security.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.security</groupId>
+                <artifactId>spring-security-web</artifactId>
+                <version>${spring.security.version}</version>
             </dependency>
             <!-- Logging -->
             <dependency>
