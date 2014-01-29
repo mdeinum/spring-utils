@@ -53,6 +53,7 @@
         <module>validation</module>
         <module>multi-tenant</module>
         <module>web</module>
+        <module>security</module>
     </modules>
 
 </project>
