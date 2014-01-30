@@ -12,28 +12,28 @@ import java.io.IOException;
 import java.util.Map;
 
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertEquals;
 
 
 /**
  * Created by in329dei on 29-1-14.
  */
-public class FilterInitDestroyBeanFactoryPostProcessorTest {
+public class FilterInitDestroyBeanPostProcessorTest {
 
 
     @Test
     public void standaloneBeanPostProcessorTest() {
-        MockServletContext servletContext = new MockServletContext();
-        MockEnvironment environment = new MockEnvironment();
-        environment.setProperty("foo", "bar");
-
         final DummyTestFilter bean = new DummyTestFilter();
         final String beanName = "testFilter";
+
+        MockServletContext servletContext = new MockServletContext();
+        MockEnvironment environment = new MockEnvironment();
+        environment.setProperty(beanName+".foo", "bar");
+
 
         assertFalse(bean.isInitCalled());
         assertFalse(bean.isDestroyCalled());
 
-        FilterInitDestroyBeanFactoryPostProcessor processor = new FilterInitDestroyBeanFactoryPostProcessor();
+        FilterInitDestroyBeanPostProcessor processor = new FilterInitDestroyBeanPostProcessor();
         processor.setServletContext(servletContext);
         processor.setEnvironment(environment);
         processor.postProcessBeforeInitialization(bean, beanName);
@@ -56,7 +56,8 @@ public class FilterInitDestroyBeanFactoryPostProcessorTest {
     public void integrationBeanPostProcessorTest() {
         MockServletContext servletContext = new MockServletContext();
         MockEnvironment environment = new MockEnvironment();
-        environment.setProperty("foo", "bar");
+        environment.setProperty("filter1.foo", "bar");
+        environment.setProperty("filter2.foo", "baz");
 
         AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
         context.setServletContext(servletContext);
@@ -76,7 +77,7 @@ public class FilterInitDestroyBeanFactoryPostProcessorTest {
         DummyTestFilter filter2 = filters.get("filter2");
         assertTrue(filter2.isInitCalled());
         assertFalse(filter2.isDestroyCalled());
-        assertEquals("bar", filter2.getValue());
+        assertEquals("baz", filter2.getValue());
         assertEquals("filter2", filter2.getName());
 
         context.destroy();
@@ -90,8 +91,8 @@ public class FilterInitDestroyBeanFactoryPostProcessorTest {
     public static class TestConfig {
 
         @Bean
-        public static FilterInitDestroyBeanFactoryPostProcessor filterInitDestroyBeanFactoryPostProcessor() {
-            return new FilterInitDestroyBeanFactoryPostProcessor();
+        public static FilterInitDestroyBeanPostProcessor filterInitDestroyBeanFactoryPostProcessor() {
+            return new FilterInitDestroyBeanPostProcessor();
         }
 
         @Bean

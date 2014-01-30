@@ -25,12 +25,16 @@ import java.util.Enumeration;
  * @author Marten Deinum
  *
  */
-public class FilterInitDestroyBeanFactoryPostProcessor implements EnvironmentAware, ServletContextAware, DestructionAwareBeanPostProcessor {
+public class FilterInitDestroyBeanPostProcessor implements EnvironmentAware, ServletContextAware, DestructionAwareBeanPostProcessor {
 
-    private final Logger logger = LoggerFactory.getLogger(FilterInitDestroyBeanFactoryPostProcessor.class);
+    private final Logger logger = LoggerFactory.getLogger(FilterInitDestroyBeanPostProcessor.class);
 
     private Environment environment;
     private ServletContext servletContext;
+
+    /** Use <code>beanName</code> as prefix for the property to lookup */
+    private boolean useBeanNameAsPrefix = true;
+
 
     @Override
     public void postProcessBeforeDestruction(Object bean, String beanName) throws BeansException {
@@ -73,6 +77,15 @@ public class FilterInitDestroyBeanFactoryPostProcessor implements EnvironmentAwa
     }
 
     /**
+     * Should we use the <code>beanName</code> as the prefix for the property to lookup. Default is <code>true</code>.
+     *
+     * @param useBeanNameAsPrefix
+     */
+    public void setUseBeanNameAsPrefix(boolean useBeanNameAsPrefix) {
+        this.useBeanNameAsPrefix = useBeanNameAsPrefix;
+    }
+
+    /**
      * {@code FilterConfig} which delegates calls to the {@code #getInitParameter} to the {@coe Environment}.
      *
      * <code>getFilterName</code> will return the <code>beanName</code>
@@ -106,7 +119,11 @@ public class FilterInitDestroyBeanFactoryPostProcessor implements EnvironmentAwa
          */
         @Override
         public String getInitParameter(String name) {
-            return environment.getProperty(name);
+            if (useBeanNameAsPrefix) {
+                return environment.getProperty(beanName+"."+name);
+            } else {
+                return environment.getProperty(name);
+            }
         }
 
         /**
