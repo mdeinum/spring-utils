@@ -8,6 +8,7 @@ import org.springframework.beans.factory.config.DestructionAwareBeanPostProcesso
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
 import org.springframework.web.context.ServletContextAware;
+import org.springframework.web.filter.GenericFilterBean;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterConfig;
@@ -35,6 +36,9 @@ public class FilterInitDestroyBeanPostProcessor implements EnvironmentAware, Ser
     /** Use <code>beanName</code> as prefix for the property to lookup */
     private boolean useBeanNameAsPrefix = true;
 
+    /** Filter class this BeanPostProcessor applies to */
+    private Class[] mappedFilterClasses;
+
 
     @Override
     public void postProcessBeforeDestruction(Object bean, String beanName) throws BeansException {
@@ -50,7 +54,7 @@ public class FilterInitDestroyBeanPostProcessor implements EnvironmentAware, Ser
 
     @Override
     public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
-        if (bean instanceof Filter) {
+        if (shouldApplyTo(bean)) {
             try {
                 logger.debug("Invoking init method on bean '" + beanName + "'");
                 ((Filter) bean).init(new EnvironmentAwareFilterConfig(beanName));
@@ -59,6 +63,31 @@ public class FilterInitDestroyBeanPostProcessor implements EnvironmentAware, Ser
             }
         }
         return bean;
+    }
+
+    /**
+     * Check whether this post processor should be applied to the given bean. By default applies to all {@code javax.servlet.Filter}
+     * beans which aren't a subclass of {@code GenericFilterBean}. The latter has its own initializing mechanism.
+     *
+     * Additionally checks if the filter matches one of the given <code>mappedFilterClasses</code> if specified.
+     *
+     * @param bean the bean to match.
+     * @return
+     */
+    protected boolean shouldApplyTo(Object bean) {
+        if (bean instanceof Filter && !(bean instanceof GenericFilterBean)) {
+            if (mappedFilterClasses != null) {
+                for (Class handlerClass : this.mappedFilterClasses) {
+                    if (handlerClass.isInstance(bean)) {
+                        return true;
+                    }
+                }
+                return false;
+            } else {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -83,6 +112,13 @@ public class FilterInitDestroyBeanPostProcessor implements EnvironmentAware, Ser
      */
     public void setUseBeanNameAsPrefix(boolean useBeanNameAsPrefix) {
         this.useBeanNameAsPrefix = useBeanNameAsPrefix;
+    }
+
+    /**
+     * Specify the set of classes that this post processor should apply to.
+     */
+    public void setMappedFilterClasses(Class[] mappedFilterClasses) {
+        this.mappedFilterClasses = mappedFilterClasses;
     }
 
     /**

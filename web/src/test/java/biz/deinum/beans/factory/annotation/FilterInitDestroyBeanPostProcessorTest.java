@@ -6,9 +6,12 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
+import org.springframework.web.filter.CharacterEncodingFilter;
+import org.springframework.web.filter.GenericFilterBean;
 
 import javax.servlet.*;
 import java.io.IOException;
+import java.util.Date;
 import java.util.Map;
 
 import static org.junit.Assert.*;
@@ -19,6 +22,21 @@ import static org.junit.Assert.*;
  */
 public class FilterInitDestroyBeanPostProcessorTest {
 
+
+    @Test
+    public void shouldApplyTo() {
+        FilterInitDestroyBeanPostProcessor processor = new FilterInitDestroyBeanPostProcessor();
+        assertFalse("Date is not a Filter, should not apply.", processor.shouldApplyTo(new Date()));
+        assertFalse("Filter is a GenericFilterBean, should not apply", processor.shouldApplyTo(new GenericFilterBean() {
+            @Override
+            public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+            }
+        }));
+        assertTrue("TestFilter is a normal filter, should apply.", processor.shouldApplyTo(new DummyTestFilter()));
+        processor.setMappedFilterClasses(new Class[] {CharacterEncodingFilter.class});
+
+        assertFalse("TestFilter isn't a mappedFilterClass, should not apply.", processor.shouldApplyTo(new DummyTestFilter()));
+    }
 
     @Test
     public void standaloneBeanPostProcessorTest() {
