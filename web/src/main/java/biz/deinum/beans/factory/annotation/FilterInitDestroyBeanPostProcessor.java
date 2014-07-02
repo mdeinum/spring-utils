@@ -21,7 +21,7 @@ import java.util.Enumeration;
  * and {@code Filter#destroy} methods on the filters defined in the application context..
  *
  * When calling the init method calls to {@code FilterConfig#getInitParameter} will be delegated to the {@code Environment} this
- * allows for filters not having properties exposed as setter to be configured in a Spring aplication context.
+ * allows for filters not having properties exposed as setter to be configured in a Spring application context.
  *
  * @author Marten Deinum
  *
