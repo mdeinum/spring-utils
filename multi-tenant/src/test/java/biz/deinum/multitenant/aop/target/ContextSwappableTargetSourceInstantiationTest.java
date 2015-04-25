@@ -5,6 +5,7 @@ import biz.deinum.multitenant.aop.target.registry.impl.MapTargetRegistry;
 import org.junit.Test;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.context.support.StaticApplicationContext;
 
 import javax.sql.DataSource;
 
@@ -22,7 +23,7 @@ public class ContextSwappableTargetSourceInstantiationTest {
     @Test
     public void checkInternalDefaults() throws Exception {
         ContextSwappableTargetSource target = new ContextSwappableTargetSource(javax.sql.DataSource.class);
-        target.setApplicationContext(new GenericApplicationContext());
+        target.setApplicationContext(new StaticApplicationContext());
         target.afterPropertiesSet();
 
         assertEquals(1, target.getTargetRegistries().size());

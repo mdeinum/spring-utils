@@ -24,7 +24,7 @@ public class JdbcSessionRegistry extends JdbcDaoSupport implements SessionRegist
     private static final String SELECT_SESSION_INFORMATION =    "SELECT * FROM SESSION_REGISTRY WHERE sessionid=?";
     private static final String INSERT_SESSION_INFORMATION =    "INSERT INTO SESSION_REGISTRY(sessionid, principal, expired, lastrequest) VALUES (?,?,?,?)";
     private static final String UPDATE_SESSION_INFORMATION =    "UPDATE SESSION_REGISTRY SET expired=?, lastrequest=? WHERE sessionid=?";
-    private static final String DELETE_SESSION_INFORMATION =    "DELETE FROM SESSION_REGISTRY WHERE sessionid=?"
+    private static final String DELETE_SESSION_INFORMATION =    "DELETE FROM SESSION_REGISTRY WHERE sessionid=?";
 
     @Override
     public List<Object> getAllPrincipals() {
@@ -62,7 +62,7 @@ public class JdbcSessionRegistry extends JdbcDaoSupport implements SessionRegist
                 ps.setString(1, sessionInformation.getSessionId());
                 ps.setString(2, sessionInformation.getPrincipal().toString());
                 ps.setBoolean(3, sessionInformation.isExpired());
-                ps.setTimestamp(4, new Timestamp(sessionInformation.getLastRequest().getTime())));
+                ps.setTimestamp(4, new Timestamp(sessionInformation.getLastRequest().getTime()));
             }
         });
     }
