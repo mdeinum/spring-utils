@@ -1,10 +1,10 @@
 package biz.deinum.multitenant.integration.channel.interceptor;
 
 import biz.deinum.multitenant.core.ContextHolder;
-import org.springframework.integration.Message;
-import org.springframework.integration.MessageChannel;
-import org.springframework.integration.channel.interceptor.ChannelInterceptorAdapter;
 import org.springframework.integration.support.MessageBuilder;
+import org.springframework.messaging.Message;
+import org.springframework.messaging.MessageChannel;
+import org.springframework.messaging.support.ChannelInterceptorAdapter;
 import org.springframework.util.StringUtils;
 
 /**
