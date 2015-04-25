@@ -4,8 +4,8 @@ import biz.deinum.multitenant.core.ContextHolder;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.integration.Message;
-import org.springframework.integration.message.GenericMessage;
+import org.springframework.messaging.Message;
+import org.springframework.messaging.support.GenericMessage;
 
 import java.util.Collections;
 
@@ -30,6 +30,7 @@ public class ContextMessageInterceptorTest {
     public void before() {
         message = new GenericMessage("dummy-test-payload");
     }
+
     @After
     public void after() {
         ContextHolder.clear();
