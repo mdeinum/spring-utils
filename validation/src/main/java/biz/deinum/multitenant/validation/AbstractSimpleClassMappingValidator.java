@@ -20,8 +20,8 @@ import org.springframework.util.Assert;
 import org.springframework.validation.Errors;
 
 /**
- * This class takes two parameters a supportedClass and a field. The supportedClass 
- * is the class supported by this validator and the field is the field to validate.
+ * This class takes two parameters a {@code supportedClass} and a {@code field}. The {@code supportedClass}
+ * is the class supported by this validator and the {@code field} is the field to validate.
  * 
  * @author Marten Deinum
  * @version 1.1
