@@ -30,7 +30,7 @@
 	</scm>
 
 	<organization>
-		<name>Conspect ICT diensten</name>
+		<name>Conspect Consulting &amp; ICT</name>
 		<url>http://www.conspect.nl</url>
 	</organization>
 
@@ -39,7 +39,7 @@
 			<id>mdeinum</id>
 			<email>mdeinum@gmail.com</email>
 			<name>Marten Deinum</name>
-			<organization>Conspect ICT diensten</organization>
+			<organization>Conspect Consulting &amp; ICT</organization>
 			<roles>
 				<role>developer</role>
 			</roles>
@@ -49,7 +49,6 @@
     <modules>
         <module>parent</module>
         <module>webservices</module>
-        <module>batch</module>
         <module>validation</module>
         <module>multi-tenant</module>
         <module>web</module>
