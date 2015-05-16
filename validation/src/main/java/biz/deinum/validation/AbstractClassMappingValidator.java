@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package biz.deinum.multitenant.validation;
+package biz.deinum.validation;
 
 import java.util.HashMap;
 import java.util.Iterator;

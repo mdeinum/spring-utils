@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package biz.deinum.multitenant.validation;
+package biz.deinum.validation;
 
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
