@@ -19,7 +19,7 @@ import org.springframework.core.Ordered;
 
 /**
  * Generic implementation and functionality for a {@link TargetRegistry}. 
- * This class provides optional chaining of TargetRestry instances.
+ * This class provides optional chaining of {@code TargetRegistry} instances.
  * 
  * @author Marten Deinum
  * @since 1.1
@@ -56,8 +56,9 @@ public abstract class AbstractTargetRegistry<T> implements TargetRegistry<T>, Or
     /**
      * Retrieve the target. Subclasses must implement this method.
      * 
-     * @param context
-     * @return
+     * @param context the context to use for the lookup
+     * @return the found target object
+     *
      * @see #getTarget(String)
      */
     protected abstract T getTargetInternal(final String context);

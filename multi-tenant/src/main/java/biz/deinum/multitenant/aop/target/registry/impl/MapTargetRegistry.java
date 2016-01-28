@@ -22,7 +22,7 @@ import java.util.Map;
 import java.util.WeakHashMap;
 
 /**
- * TargetRegistry which retrieves the correct target from a Map.
+ * {@code TargetRegistry} which retrieves the correct target from a {@code Map}.
  * 
  * @author Marten Deinum
  * @version 1.0

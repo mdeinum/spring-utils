@@ -18,11 +18,11 @@ package biz.deinum.multitenant.aop.target.registry;
 public interface TargetRegistry<T> {
 
     /**
-     * Returns the Target object for the given context, or null when none can be found.
+     * Returns the Target object for the given context, or {@code null} when none can be found.
      * 
      * @param context
      * @return
      */
-    public T getTarget(final String context);
+    T getTarget(final String context);
 
 }

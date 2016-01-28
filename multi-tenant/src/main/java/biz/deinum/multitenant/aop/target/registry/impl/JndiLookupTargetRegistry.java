@@ -28,7 +28,7 @@ import javax.naming.NamingException;
  * {@link TargetRegistry} implementation which delegates the lookup to a
  * {@link JndiTemplate}. 
  * 
- * Can optionally include a <code>prefix</code> and <code>suffix</code> to be 
+ * Can optionally include a {@code prefix} and {@code suffix} to be
  * added to make up the actual JNDI name.
  * 
  * @author Marten Deinum

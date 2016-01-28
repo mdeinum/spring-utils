@@ -25,7 +25,8 @@ import org.springframework.util.Assert;
 import biz.deinum.multitenant.aop.target.registry.AbstractTargetRegistry;
 
 /**
- * TargetRegistry which retrieves a bean from the {@link BeanFactory}.
+ * {@code TargetRegistry} which retrieves a bean from the {@link BeanFactory}.
+ *
  * @author Marten Deinum
  * @version 1.0
  */
@@ -38,13 +39,11 @@ public class BeanFactoryTargetRegistry<T> extends AbstractTargetRegistry<T> impl
     private String suffix = "";
 
     public void setPrefix(final String prefix) {
-        Assert.notNull(prefix, "When setting prefix, prefix cannot be null!");
-        this.prefix = prefix;
+        this.prefix = (prefix != null ? prefix : "");
     }
 
     public void setSuffix(final String suffix) {
-        Assert.notNull(this.prefix, "When setting suffix, suffix cannot be null!");
-        this.suffix = suffix;
+        this.suffix = (suffix != null ? suffix :"");
     }
 
     private String getTargetName(final String context) {
@@ -54,10 +53,10 @@ public class BeanFactoryTargetRegistry<T> extends AbstractTargetRegistry<T> impl
     }
 
     /**
-     * Gets the target from the ApplicationContext. The name of the bean is being
-     * constructed with the configured <code>prefix</code> and <code>suffix</code>.
+     * Gets the target from the {@code BeanFactory}. The name of the bean is being
+     * constructed with the configured {@code prefix} and {@code suffix}.
      * 
-     * @return the found object or <code>null</code>
+     * @return the found object or {@code null}
      */
     @Override
     @SuppressWarnings("unchecked")

@@ -33,7 +33,7 @@ import java.util.*;
 
 /**
  * TargetSource which returns the correct target based on the current context set in the {@link biz.deinum.multitenant.core.ContextHolder}.
- * If no context is found a {@link TargetLookupFailureException} is thrown or the <code>defaultTarget</code> is returned
+ * If no context is found a {@link TargetLookupFailureException} is thrown or the {@code defaultTarget} is returned
  * , depending on the setting of the alwaysReturnTarget property (default is false);
  * 
  * By default this class delegates the detection of target to a {@link BeanFactoryTargetRegistry}. 
@@ -121,12 +121,12 @@ public class ContextSwappableTargetSource implements TargetSource, InitializingB
 
     /**
      * Gets the targetobject from the configured {@link TargetRegistry}. If no
-     * target is found and <code>alwaysReturnTarget</code> is set to <code>
-     * true</code>, the <code>defaultTarget</code> is used as the targetObject,
-     * else <code>null</code> is being returned. 
+     * target is found and {@code alwaysReturnTarget} is set to {@code true}
+     * the {@code defaultTarget} is used as the {@code targetObject},
+     * else {@code null} is being returned.
      * 
      * @param context
-     * @return targetObject or <code>null</code>
+     * @return targetObject or {@code null}
      * @throws TargetLookupFailureException if nothing can be returned
      * 
      * @see TargetRegistry#getTarget(String)

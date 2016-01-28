@@ -23,7 +23,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * {@link TargetRegistry} implementation that does some simple caching.
  * It first checks the internal cache it it hasn't found a target it checks
- * the delegate TargetRegistry for a target, if found it is registered in the
+ * the delegate {@code TargetRegistry} for a target, if found it is registered in the
  * internal cache for future use.
  * 
  * @author Marten Deinum

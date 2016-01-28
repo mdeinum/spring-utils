@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * ContextHolder will hold a reference to a context which can be used through-out
- * the application. The reference will be stored in a <code>ThreadLocal</code>.
+ * the application. The reference will be stored in a {@code ThreadLocal}.
  * 
  * @author Marten Deinum
  * @version 1.0
