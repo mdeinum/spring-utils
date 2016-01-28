@@ -15,7 +15,7 @@ import org.springframework.util.StringUtils;
  */
 public class ContextMessageInterceptor extends ChannelInterceptorAdapter {
 
-    private static final String DEFAULT_HEADER_NAME = ContextMessageInterceptor.class.getName() + ".CONTEXT";
+    private static final String DEFAULT_HEADER_NAME = ContextHolder.class.getName() + ".CONTEXT";
 
     private String headerName = DEFAULT_HEADER_NAME;
 
@@ -31,7 +31,7 @@ public class ContextMessageInterceptor extends ChannelInterceptorAdapter {
         String context = ContextHolder.getContext();
         if (StringUtils.hasText(context)) {
             MessageBuilder<?> builder = MessageBuilder.fromMessage(message);
-            builder = builder.setHeader(headerName, context);
+            builder = builder.setHeader(this.headerName, context);
             return builder.build();
         }
         return message;
@@ -39,7 +39,7 @@ public class ContextMessageInterceptor extends ChannelInterceptorAdapter {
 
     @Override
     public Message<?> postReceive(Message<?> message, MessageChannel messageChannel) {
-        String context = message.getHeaders().get(headerName, String.class);
+        String context = message.getHeaders().get(this.headerName, String.class);
         if (StringUtils.hasText(context)) {
             ContextHolder.setContext(context);
         }

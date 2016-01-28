@@ -17,7 +17,7 @@ import java.io.IOException;
  */
 public class ContextHeaderInterceptor implements ClientHttpRequestInterceptor {
 
-    private static final String DEFAULT_HEADER_NAME = ContextHeaderInterceptor.class.getName() + ".CONTEXT";
+    private static final String DEFAULT_HEADER_NAME = ContextHolder.class.getName() + ".CONTEXT";
 
     private String headerName = DEFAULT_HEADER_NAME;
 
