@@ -24,7 +24,7 @@ import static org.mockito.Mockito.when;
  * @author Marten Deinum
  */
 @RunWith(MockitoJUnitRunner.class)
-public class ContextInterceptorTest {
+public class ContextHandlerInterceptorTest {
 
     @Mock
     private ContextRepository repository;
@@ -32,12 +32,12 @@ public class ContextInterceptorTest {
     private HttpServletRequest request = new  MockHttpServletRequest();
     private HttpServletResponse response = new MockHttpServletResponse();
 
-    private ContextInterceptor interceptor;
+    private ContextHandlerInterceptor interceptor;
 
     @Before
     public void before() {
         ContextHolder.clear();
-        interceptor = new ContextInterceptor(repository);
+        interceptor = new ContextHandlerInterceptor(repository);
     }
 
     @Test

@@ -28,6 +28,7 @@ public class ContextMessageInterceptorTest {
 
     @Before
     public void before() {
+        ContextHolder.clear();
         message = new GenericMessage("dummy-test-payload");
     }
 
@@ -37,14 +38,14 @@ public class ContextMessageInterceptorTest {
     }
 
     @Test
-    public void whenContextIsSetThenTheContextHeaderShouldBeSet() {
+    public void whenNoContextIsSetThenNoContextHeaderShouldBeSet() {
         Message msg = interceptor.preSend(message, null);
         String context = msg.getHeaders().get(interceptor.getHeaderName(), String.class);
         assertNull(context);
     }
 
     @Test
-    public void whenNoContextIsSetThenNoContextHeaderShouldBeSet() {
+    public void whenContextIsSetThenTheContextHeaderShouldBeSet() {
         ContextHolder.setContext("test");
         Message msg = interceptor.preSend(message, null);
         String context = msg.getHeaders().get(interceptor.getHeaderName(), String.class);

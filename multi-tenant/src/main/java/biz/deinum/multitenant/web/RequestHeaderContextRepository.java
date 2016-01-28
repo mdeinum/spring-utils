@@ -32,6 +32,7 @@ public class RequestHeaderContextRepository implements ContextRepository {
 
     @Override
     public String getContext(HttpServletRequest request, HttpServletResponse response) {
+
         String context = request.getHeader(headerName);
         if (StringUtils.hasText(context)) {
             return context;
