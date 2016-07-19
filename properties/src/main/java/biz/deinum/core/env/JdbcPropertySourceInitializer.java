@@ -42,6 +42,7 @@ import org.springframework.jdbc.datasource.lookup.JndiDataSourceLookup;
  *     config.jdbc.url : The JDBC Url to use for a local datasource
  *     config.jdbc.username : The username to use for a local datasource
  *     config.jdbc.password : The password to user for a local datasource
+ *     config.jdbc.query : The query to execute
  * </pre>
  *
  * @author Marten Deinum
@@ -59,12 +60,12 @@ public class JdbcPropertySourceInitializer implements ApplicationContextInitiali
             Properties jdbcProperties = new JdbcPropertiesLoader(env, dataSource).load();
             env.getPropertySources().addLast(new PropertiesPropertySource("jdbc-properties", jdbcProperties));
         } else {
-            logger.info("Skipping initializing JDBC properties, no 'config.jdbc` properties detected.");
+            logger.info("Skipping initializing JDBC properties, no 'config.jdbc.*` properties detected.");
         }
     }
 
     protected DataSource getDataSource(Environment env) {
-        if (env.containsProperty("config.datasource.jndi-name")) {
+        if (env.containsProperty("config.jdbc.jndi-name")) {
             return new JndiDataSourceLookup().getDataSource(env.getProperty("config.jdbc.jndi-name"));
         } else if (env.containsProperty("config.jdbc.url")){
             DriverManagerDataSource dataSource = new DriverManagerDataSource();
