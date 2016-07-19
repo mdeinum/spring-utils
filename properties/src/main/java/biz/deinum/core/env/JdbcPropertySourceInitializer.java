@@ -65,12 +65,12 @@ public class JdbcPropertySourceInitializer implements ApplicationContextInitiali
 
     protected DataSource getDataSource(Environment env) {
         if (env.containsProperty("config.datasource.jndi-name")) {
-            return new JndiDataSourceLookup().getDataSource(env.getProperty("config.datasource.jndi-name"));
-        } else if (env.containsProperty("config.datasource.url")){
+            return new JndiDataSourceLookup().getDataSource(env.getProperty("config.jdbc.jndi-name"));
+        } else if (env.containsProperty("config.jdbc.url")){
             DriverManagerDataSource dataSource = new DriverManagerDataSource();
-            dataSource.setUrl(env.getProperty("config.datasource.url"));
-            dataSource.setUsername(env.getProperty("config.datasource.username"));
-            dataSource.setPassword(env.getProperty("config.datasource.password"));
+            dataSource.setUrl(env.getProperty("config.jdbc.url"));
+            dataSource.setUsername(env.getProperty("config.jdbc.username"));
+            dataSource.setPassword(env.getProperty("config.jdbc.password"));
             return dataSource;
         }
         return null;
@@ -84,7 +84,7 @@ public class JdbcPropertySourceInitializer implements ApplicationContextInitiali
         private final JdbcTemplate jdbc;
 
         private JdbcPropertiesLoader(Environment env, DataSource dataSource) {
-            this.query = env.resolveRequiredPlaceholders(env.getProperty("config.query", DEFAULT_QUERY));
+            this.query = env.resolveRequiredPlaceholders(env.getProperty("config.jdbc.query", DEFAULT_QUERY));
             this.jdbc= new JdbcTemplate(dataSource);
         }
 
