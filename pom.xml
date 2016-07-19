@@ -53,6 +53,9 @@
         <module>multi-tenant</module>
         <module>web</module>
         <module>security</module>
-    </modules>
+		<module>properties</module>
+		<module>messaging</module>
+		<module>batch</module>
+	</modules>
 
 </project>
