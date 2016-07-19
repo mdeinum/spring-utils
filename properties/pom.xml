@@ -21,12 +21,6 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-jdbc</artifactId>
         </dependency>
-        <!-- Optional Dependencies -->
-        <dependency>
-            <groupId>org.jasypt</groupId>
-            <artifactId>jasypt-spring31</artifactId>
-            <version>1.9.2</version>
-        </dependency>
     </dependencies>
 
 </project>
