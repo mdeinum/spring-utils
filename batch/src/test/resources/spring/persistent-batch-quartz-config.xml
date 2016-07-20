@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~  Copyright 2007-2016 the original author or authors.
+  ~
+  ~  Licensed under the Apache License, Version 2.0 (the "License");
+  ~  you may not use this file except in compliance with the License.
+  ~  You may obtain a copy of the License at
+  ~
+  ~       http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~  Unless required by applicable law or agreed to in writing, software
+  ~  distributed under the License is distributed on an "AS IS" BASIS,
+  ~  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~  See the License for the specific language governing permissions and
+  ~  limitations under the License.
+  -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd">
+
+
+    <import resource="classpath:spring/persistent-batch-config.xml" />
+    <import resource="classpath:spring/quartz-job.xml" />
+
+    <jdbc:initialize-database data-source="dataSource" ignore-failures="DROPS" enabled="true">
+        <jdbc:script location="classpath:sql/quartz_tables_hsqldb.sql"/>
+    </jdbc:initialize-database>
+
+    <task:executor id="taskExecutor"  pool-size="2" />
+
+    <bean id="scheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean" parent="baseBatchScheduler">
+        <property name="overwriteExistingJobs" value="true" />
+        <property name="triggers" ref="trigger" />
+        <!-- Persistence Properties -->
+        <property name="dataSource" ref="dataSource" />
+        <property name="transactionManager" ref="transactionManager" />
+        <property name="quartzProperties">
+            <props>
+                <prop key="org.quartz.jobStore.driverDelegateClass">org.quartz.impl.jdbcjobstore.HSQLDBDelegate</prop>
+                <prop key="org.quartz.plugin.shutdownhook.class">org.quartz.plugins.management.ShutdownHookPlugin</prop>
+                <prop key="org.quartz.plugin.shutdownhook.cleanShutdown">true</prop>
+                <prop key="org.quartz.plugin.jobHistory.class">org.quartz.plugins.history.LoggingJobHistoryPlugin</prop>
+                <prop key="org.quartz.plugin.triggerHistory.class">org.quartz.plugins.history.LoggingTriggerHistoryPlugin</prop>
+            </props>
+        </property>
+    </bean>
+
+</beans>

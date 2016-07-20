@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="trigger" class="org.springframework.scheduling.quartz.SimpleTriggerFactoryBean">
+        <property name="startDelay" value="500" />
+        <property name="repeatCount" value="0" />
+        <property name="repeatInterval" value="50" />
+        <property name="jobDetail" ref="helloWorldJobLauncher" />
+    </bean>
+
+    <bean id="helloWorldJobLauncher" class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
+        <property name="jobClass" value="biz.deinum.batch.scheduling.quartz.JobLauncherJob" />
+        <property name="jobDataAsMap">
+            <map>
+                <entry key="jobName" value="helloWorld" />
+                <entry key="-message" value="Hello World from a Quartz Launched Batch Job" />
+            </map>
+        </property>
+    </bean>
+
+    <bean id="baseBatchScheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean" abstract="true">
+        <property name="applicationContextSchedulerContextKey" value="applicationContext" />
+        <property name="schedulerContextAsMap">
+            <map>
+                <entry key="jobLauncher" value-ref="jobLauncher" />
+                <entry key="jobRegistry" value-ref="jobRegistry" />
+                <entry key="jobExplorer" value-ref="jobExplorer" />
+            </map>
+        </property>
+        <property name="jobFactory">
+            <bean class="org.springframework.scheduling.quartz.SpringBeanJobFactory" />
+        </property>
+    </bean>
+
+
+</beans>

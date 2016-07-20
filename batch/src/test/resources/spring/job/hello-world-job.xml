@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:batch="http://www.springframework.org/schema/batch"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch.xsd">
+
+    <bean id="incrementer" class="org.springframework.batch.core.launch.support.RunIdIncrementer" />
+
+    <batch:job id="helloWorld" incrementer="incrementer">
+        <batch:step id="step1">
+            <batch:tasklet ref="helloWorldTasklet" />
+        </batch:step>
+    </batch:job>
+
+    <bean id="helloWorldTasklet" class="biz.deinum.batch.scheduling.quartz.SimpleJobLauncherJobTest$SystemOutTasklet" scope="step">
+        <property name="message" value="#{jobParameters[message]}" />
+    </bean>
+
+</beans>
