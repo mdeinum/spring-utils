@@ -4,7 +4,7 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
     <bean id="trigger" class="org.springframework.scheduling.quartz.SimpleTriggerFactoryBean">
-        <property name="startDelay" value="500" />
+        <property name="startDelay" value="1000" />
         <property name="repeatCount" value="0" />
         <property name="repeatInterval" value="50" />
         <property name="jobDetail" ref="helloWorldJobLauncher" />

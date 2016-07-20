@@ -44,7 +44,7 @@ public class SimpleJobLauncherJobTest {
 
     @Test
     public void shouldLaunchJob() throws Exception {
-        Thread.sleep(2500);
+        Thread.sleep(1500);
         assertThat(jobRepository.getJobInstanceCount("helloWorld")).isEqualTo(1);
         List<JobInstance> jobInstances = jobRepository.getJobInstances("helloWorld", 0, 1);
         for (JobInstance instance : jobInstances) {
