@@ -23,11 +23,7 @@ import org.springframework.security.core.session.SessionDestroyedEvent;
 import org.springframework.security.core.session.SessionRegistry;
 
 /**
- * Created with IntelliJ IDEA.
- * User: in329dei
- * Date: 11-12-13
- * Time: 14:56
- * To change this template use File | Settings | File Templates.
+ * @author Marten Deinum
  */
 public abstract class AbstractSessionRegistry implements SessionRegistry, ApplicationListener<SessionDestroyedEvent> {
 

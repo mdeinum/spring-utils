@@ -34,7 +34,7 @@ import biz.deinum.security.core.session.AbstractSessionRegistry;
 /**
  * @author Marten Deinum
  */
-public class CacheSessionRegistryImpl extends AbstractSessionRegistry implements InitializingBean {
+public class CacheSessionRegistry extends AbstractSessionRegistry implements InitializingBean {
 
     private static final String DEFAULT_SESSIONIDS_CACHE_NAME = "sessionIds";
     private static final String DEFAULT_PRINCIPAL_CACHE_NAME = "principals";
@@ -46,7 +46,7 @@ public class CacheSessionRegistryImpl extends AbstractSessionRegistry implements
     private String sessionIdCacheName = DEFAULT_SESSIONIDS_CACHE_NAME;
     private String principalsCacheName = DEFAULT_PRINCIPAL_CACHE_NAME;
 
-    public CacheSessionRegistryImpl(CacheManager cacheManager) {
+    public CacheSessionRegistry(CacheManager cacheManager) {
         super();
         this.cacheManager=cacheManager;
     }
@@ -61,8 +61,7 @@ public class CacheSessionRegistryImpl extends AbstractSessionRegistry implements
 
     @Override
     public List<Object> getAllPrincipals() {
-        logger.debug("getAllPrincipals");
-        return null;
+        throw new UnsupportedOperationException("getAllPrincipals not supported.");
     }
 
     @Override
@@ -175,4 +174,11 @@ public class CacheSessionRegistryImpl extends AbstractSessionRegistry implements
         logger.trace("Sessions used by '{}' : ",info.getPrincipal() , sessionsUsedByPrincipal);
     }
 
+    public void setSessionIdCacheName(String sessionIdCacheName) {
+        this.sessionIdCacheName = sessionIdCacheName;
+    }
+
+    public void setPrincipalsCacheName(String principalsCacheName) {
+        this.principalsCacheName = principalsCacheName;
+    }
 }

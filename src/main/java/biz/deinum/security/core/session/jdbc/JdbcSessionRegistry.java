@@ -21,22 +21,22 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
+import javax.sql.DataSource;
 
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.support.JdbcDaoSupport;
 import org.springframework.security.core.session.SessionInformation;
-import org.springframework.security.core.session.SessionRegistry;
+import org.springframework.util.Assert;
+
+import biz.deinum.security.core.session.AbstractSessionRegistry;
 
 /**
- * Created with IntelliJ IDEA.
- * User: in329dei
- * Date: 11-12-13
- * Time: 8:36
- * To change this template use File | Settings | File Templates.
+ * @author Marten Deinum
  */
-public class JdbcSessionRegistry extends JdbcDaoSupport implements SessionRegistry {
+public class JdbcSessionRegistry extends AbstractSessionRegistry {
 
     private static final String SELECT_ALL_PRINCIPALS_QUERY =   "SELECT DISTINCT principal FROM SESSION_REGISTRY";
     private static final String SELECT_ALL_ACTIVE_SESSIONS =    "SELECT * FROM SESSION_REGISTRY where principal=? and expired=false";
@@ -46,37 +46,73 @@ public class JdbcSessionRegistry extends JdbcDaoSupport implements SessionRegist
     private static final String UPDATE_SESSION_INFORMATION =    "UPDATE SESSION_REGISTRY SET expired=?, lastrequest=? WHERE sessionid=?";
     private static final String DELETE_SESSION_INFORMATION =    "DELETE FROM SESSION_REGISTRY WHERE sessionid=?";
 
+    private final JdbcTemplate jdbcTemplate;
+    
+    public JdbcSessionRegistry(DataSource dataSource) {
+        this(new JdbcTemplate(dataSource));
+    }
+
+    public JdbcSessionRegistry(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate=jdbcTemplate;
+    }
+
+
     @Override
     public List<Object> getAllPrincipals() {
-//        return (List<Object>) getJdbcTemplate().queryForList(SELECT_ALL_PRINCIPALS_QUERY, String.class);
-        return null;
+        List<Object> result = new ArrayList<>();
+        result.addAll(this.jdbcTemplate.queryForList(SELECT_ALL_PRINCIPALS_QUERY, String.class));
+        return result;
     }
 
     @Override
     public List<SessionInformation> getAllSessions(Object principal, boolean includeExpiredSessions) {
         if (includeExpiredSessions) {
-            return getJdbcTemplate().query(SELECT_ALL_SESSIONS, new SessionInformationRowMapper(), principal);
+            return this.jdbcTemplate.query(SELECT_ALL_SESSIONS, new SessionInformationRowMapper(), principal);
         } else {
-            return getJdbcTemplate().query(SELECT_ALL_ACTIVE_SESSIONS, new SessionInformationRowMapper(), principal);
+            return this.jdbcTemplate.query(SELECT_ALL_ACTIVE_SESSIONS, new SessionInformationRowMapper(), principal);
         }
     }
 
     @Override
     public SessionInformation getSessionInformation(String sessionId) {
-        return getJdbcTemplate().queryForObject(SELECT_SESSION_INFORMATION, new SessionInformationRowMapper(), sessionId);
+        Assert.hasText(sessionId, "SessionId required as per interface contract");
+        List<SessionInformation> sessionInformation = this.jdbcTemplate.query(SELECT_SESSION_INFORMATION, new SessionInformationRowMapper(), sessionId);
+        if (sessionInformation.size() == 1) {
+            return sessionInformation.get(0);
+        }
+        return null;
     }
 
     @Override
     public void refreshLastRequest(String sessionId) {
+        Assert.hasText(sessionId, "SessionId required as per interface contract");
         SessionInformation sessionInformation = getSessionInformation(sessionId);
         if (sessionInformation != null) {
             sessionInformation.refreshLastRequest();
-            getJdbcTemplate().update(UPDATE_SESSION_INFORMATION, sessionInformation.isExpired(), sessionInformation.getLastRequest(), sessionId);
+            update(sessionInformation);
         }
     }
 
-    public void save(final SessionInformation sessionInformation) {
-        getJdbcTemplate().update(INSERT_SESSION_INFORMATION, new PreparedStatementSetter() {
+    @Override
+    public void registerNewSession(String sessionId, Object principal) {
+        Assert.hasText(sessionId, "SessionId required as per interface contract");
+        Assert.notNull(principal, "Principal required as per interface contract");
+
+        logger.debug("Registering session {}, for principal {}", sessionId, principal);
+
+        SessionInformation sessionInformation = new JdbcSessionInformation(principal, sessionId, new java.util.Date(), this);
+        save(sessionInformation);
+    }
+
+    @Override
+    public void removeSessionInformation(String sessionId) {
+        Assert.hasText(sessionId, "SessionId required as per interface contract");
+
+        this.jdbcTemplate.update(DELETE_SESSION_INFORMATION, sessionId);
+    }
+
+    void save(final SessionInformation sessionInformation) {
+        this.jdbcTemplate.update(INSERT_SESSION_INFORMATION, new PreparedStatementSetter() {
             @Override
             public void setValues(PreparedStatement ps) throws SQLException {
                 ps.setString(1, sessionInformation.getSessionId());
@@ -87,16 +123,12 @@ public class JdbcSessionRegistry extends JdbcDaoSupport implements SessionRegist
         });
     }
 
-    @Override
-    public void registerNewSession(String sessionId, Object principal) {
-        SessionInformation sessionInformation = new SessionInformation(principal, sessionId, new java.util.Date());
-        save(sessionInformation);
+    void update(SessionInformation sessionInformation) {
+        if (sessionInformation != null) {
+            this.jdbcTemplate.update(UPDATE_SESSION_INFORMATION, sessionInformation.isExpired(), sessionInformation.getLastRequest(), sessionInformation.getSessionId());
+        }
     }
 
-    @Override
-    public void removeSessionInformation(String sessionId) {
-        getJdbcTemplate().update(DELETE_SESSION_INFORMATION, sessionId);
-    }
 
     private final class SessionInformationRowMapper implements RowMapper<SessionInformation> {
         @Override
@@ -105,12 +137,37 @@ public class JdbcSessionRegistry extends JdbcDaoSupport implements SessionRegist
             String principal = resultSet.getString("principal");
             boolean expired = resultSet.getBoolean("expired");
             Date lastRequest = new Date(resultSet.getTimestamp("lastrequest").getTime());
-            SessionInformation si = new SessionInformation(principal, sessionId, lastRequest);
+            JdbcSessionInformation si = new JdbcSessionInformation(principal, sessionId, lastRequest);
             if (expired) {
                 si.expireNow();
             }
-
+            si.setRegistry(JdbcSessionRegistry.this);
             return si;
+        }
+    }
+
+    public static class JdbcSessionInformation extends SessionInformation {
+
+        private transient JdbcSessionRegistry registry;
+
+        public JdbcSessionInformation(Object principal, String sessionId, java.util.Date lastRequest) {
+            this(principal, sessionId, lastRequest, null);
+        }
+        public JdbcSessionInformation(Object principal, String sessionId, java.util.Date lastRequest, JdbcSessionRegistry registry) {
+            super(principal, sessionId, lastRequest);
+            this.registry=registry;
+        }
+
+        void setRegistry(JdbcSessionRegistry registry) {
+            this.registry = registry;
+        }
+
+        @Override
+        public void expireNow() {
+            super.expireNow();
+            if (registry != null) {
+                registry.update(this);
+            }
         }
     }
 
