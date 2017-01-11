@@ -2,3 +2,6 @@ language: java
 
 install: ./mvnw -U install --quiet -DskipTests=true
 script: ./mvnw clean test
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
