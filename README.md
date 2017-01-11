@@ -1,4 +1,4 @@
-Spring Utils [![Build Status](https://travis-ci.org/mdeinum/spring-utils.svg?branch=master)](https://travis-ci.org/mdeinum/spring-utils)
+Spring Utils [![Build Status](https://travis-ci.org/mdeinum/spring-utils.svg?branch=master)](https://travis-ci.org/mdeinum/spring-utils) [![codecov](https://codecov.io/gh/mdeinum/spring-utils/branch/master/graph/badge.svg)](https://codecov.io/gh/mdeinum/spring-utils)
 ============
 
 Utility classes collected and created over the years. Some of these might be useful to others.
