@@ -16,139 +16,137 @@
 
 package biz.deinum.core.env;
 
-import java.sql.Connection;
-
-import org.assertj.core.api.JUnitSoftAssertions;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import javax.naming.InitialContext;
+import org.assertj.core.api.SoftAssertions;
+import org.assertj.core.api.junit.jupiter.InjectSoftAssertions;
+import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.jdbc.datasource.init.ScriptUtils;
 import org.springframework.jdbc.support.JdbcUtils;
-import org.springframework.mock.jndi.SimpleNamingContextBuilder;
 
 /**
  * @author Marten Deinum
  */
+@ExtendWith(SoftAssertionsExtension.class)
 public class JdbcPropertySourceInitializerTest {
 
-    private static final Logger logger = LoggerFactory.getLogger(JdbcPropertySourceInitializerTest.class);
+  private static final String JDBC_URL = "jdbc:hsqldb:mem:config_db";
 
-    private static String JDBC_URL = "jdbc:hsqldb:mem:config_db";
+  private static DriverManagerDataSource dataSource;
 
-    private static DriverManagerDataSource dataSource;
+  @InjectSoftAssertions
+  public SoftAssertions softly;
 
-    @Rule
-    public JUnitSoftAssertions softly = new JUnitSoftAssertions();
+  @BeforeAll
+  public static void createDatabase() throws Exception {
+    dataSource = new DriverManagerDataSource();
+    dataSource.setUrl(JDBC_URL);
+    dataSource.setUsername("sa");
+    dataSource.setPassword("");
 
-    @BeforeClass
-    public static void createDatabase() throws Exception {
-        dataSource = new DriverManagerDataSource();
-        dataSource.setUrl(JDBC_URL);
-        dataSource.setUsername("sa");
-        dataSource.setPassword("");
+    destroyDatabase();
 
-        destroyDatabase();
+    var conn = dataSource.getConnection();
+    ScriptUtils.executeSqlScript(conn, new ClassPathResource("init.sql"));
+    JdbcUtils.closeConnection(conn);
 
-        Connection conn = dataSource.getConnection();
-        ScriptUtils.executeSqlScript(conn, new ClassPathResource("init.sql"));
-        JdbcUtils.closeConnection(conn);
+  }
 
+  @AfterAll
+  public static void destroyDatabase() throws Exception {
+    if (dataSource != null) {
+      var conn = dataSource.getConnection();
+      conn.createStatement().execute("SHUTDOWN");
+      JdbcUtils.closeConnection(conn);
     }
+  }
 
-    @AfterClass
-    public static void destroyDatabase() throws Exception {
-        if (dataSource != null) {
-            Connection conn = dataSource.getConnection();
-            conn.createStatement().execute("SHUTDOWN");
-            JdbcUtils.closeConnection(conn);
-        }
-    }
+  @AfterEach
+  public void cleanup() {
+    System.clearProperty("config.jdbc.url");
+    System.clearProperty("config.jdbc.username");
+    System.clearProperty("config.jdbc.password");
+    System.clearProperty("config.jdbc.query");
+    System.clearProperty("config.jdbc.jndi-name");
+  }
 
-    @After
-    public void cleanup() {
-        System.clearProperty("config.jdbc.url");
-        System.clearProperty("config.jdbc.username");
-        System.clearProperty("config.jdbc.password");
-        System.clearProperty("config.jdbc.query");
-        System.clearProperty("config.jdbc.jndi-name");
-    }
+  @Test
+  public void shouldNotRegisterJdbcPropertiesWhenPropertiesAreNotSet() throws Exception {
+    var context = new GenericApplicationContext();
 
-    @Test
-    public void shouldNotRegisterJdbcPropertiesWhenPropertiesAreNotSet() throws Exception {
-        GenericApplicationContext context = new GenericApplicationContext();
+    var initializer = new JdbcPropertySourceInitializer();
+    initializer.initialize(context);
 
-        JdbcPropertySourceInitializer initializer = new JdbcPropertySourceInitializer();
-        initializer.initialize(context);
+    var jdbcProperties = context.getEnvironment().getPropertySources().get("jdbc-properties");
+    softly.assertThat(jdbcProperties).isNull();
+  }
 
-        PropertySource jdbcProperties = context.getEnvironment().getPropertySources().get("jdbc-properties");
-        softly.assertThat(jdbcProperties).isNull();
-    }
+  @Test
+  public void shouldUseLocalDatabaseForLookup() {
 
-    @Test
-    public void shouldUseLocalDatabaseForLookup() {
+    System.setProperty("config.jdbc.url", JDBC_URL);
+    System.setProperty("config.jdbc.username", "sa");
+    System.setProperty("config.jdbc.password", "");
 
-        System.setProperty("config.jdbc.url", JDBC_URL);
-        System.setProperty("config.jdbc.username", "sa");
-        System.setProperty("config.jdbc.password", "");
+    var context = new GenericApplicationContext();
 
-        GenericApplicationContext context = new GenericApplicationContext();
+    var initializer = new JdbcPropertySourceInitializer();
+    initializer.initialize(context);
 
-        JdbcPropertySourceInitializer initializer = new JdbcPropertySourceInitializer();
-        initializer.initialize(context);
+    var jdbcProperties = context.getEnvironment().getPropertySources().get("jdbc-properties");
+    softly.assertThat(jdbcProperties).isNotNull();
+    softly.assertThat(jdbcProperties.getProperty("FOO")).isEqualTo("BAR");
+    softly.assertThat(jdbcProperties.getProperty("TEST")).isEqualTo("TEST");
 
-        PropertySource jdbcProperties = context.getEnvironment().getPropertySources().get("jdbc-properties");
-        softly.assertThat(jdbcProperties).isNotNull();
-        softly.assertThat(jdbcProperties.getProperty("FOO")).isEqualTo("BAR");
-        softly.assertThat(jdbcProperties.getProperty("TEST")).isEqualTo("TEST");
+  }
 
-    }
+  @Test
+  @Disabled("Currently not working with Simple-JNDI")
+  public void shouldUseJNDIDatabaseForLookup() throws Exception {
+    new InitialContext().createSubcontext("jdbc").bind("ds", dataSource);
+    System.out.println(new InitialContext());
+    System.setProperty("config.jdbc.jndi-name", "jdbc/ds");
 
-    @Test
-    public void shouldUseJNDIDatabaseForLookup() throws Exception {
-        SimpleNamingContextBuilder contextBuilder = SimpleNamingContextBuilder.emptyActivatedContextBuilder();
-        contextBuilder.bind("jdbc/ds", dataSource);
+    var context = new GenericApplicationContext();
 
-        System.setProperty("config.jdbc.jndi-name", "jdbc/ds");
+    var initializer = new JdbcPropertySourceInitializer();
+    initializer.initialize(context);
 
-        GenericApplicationContext context = new GenericApplicationContext();
+    var jdbcProperties = context.getEnvironment().getPropertySources().get("jdbc-properties");
+    softly.assertThat(jdbcProperties).isNotNull();
+    softly.assertThat(jdbcProperties.getProperty("FOO")).isEqualTo("BAR");
+    softly.assertThat(jdbcProperties.getProperty("TEST")).isEqualTo("TEST");
 
-        JdbcPropertySourceInitializer initializer = new JdbcPropertySourceInitializer();
-        initializer.initialize(context);
+  }
 
-        PropertySource jdbcProperties = context.getEnvironment().getPropertySources().get("jdbc-properties");
-        softly.assertThat(jdbcProperties).isNotNull();
-        softly.assertThat(jdbcProperties.getProperty("FOO")).isEqualTo("BAR");
-        softly.assertThat(jdbcProperties.getProperty("TEST")).isEqualTo("TEST");
+  @Test
+  public void shouldReadFromCustomTableWhenUsingModifiedQuery() {
 
-    }
+    System.setProperty("config.jdbc.url", JDBC_URL);
+    System.setProperty("config.jdbc.username", "sa");
+    System.setProperty("config.jdbc.password", "");
+    System.setProperty("config.jdbc.query", "select k,v from custom_config");
 
-    @Test
-    public void shouldReadFromCustomTableWhenUsingModifiedQuery() {
+    GenericApplicationContext context = new GenericApplicationContext();
 
-        System.setProperty("config.jdbc.url", JDBC_URL);
-        System.setProperty("config.jdbc.username", "sa");
-        System.setProperty("config.jdbc.password", "");
-        System.setProperty("config.jdbc.query", "select k,v from custom_config");
+    JdbcPropertySourceInitializer initializer = new JdbcPropertySourceInitializer();
+    initializer.initialize(context);
 
-        GenericApplicationContext context = new GenericApplicationContext();
+    PropertySource jdbcProperties = context.getEnvironment().getPropertySources().get("jdbc-properties");
+    softly.assertThat(jdbcProperties).isNotNull();
+    softly.assertThat(jdbcProperties.getProperty("BAR")).isEqualTo("FOO");
+    softly.assertThat(jdbcProperties.getProperty("test")).isEqualTo("testing123");
 
-        JdbcPropertySourceInitializer initializer = new JdbcPropertySourceInitializer();
-        initializer.initialize(context);
-
-        PropertySource jdbcProperties = context.getEnvironment().getPropertySources().get("jdbc-properties");
-        softly.assertThat(jdbcProperties).isNotNull();
-        softly.assertThat(jdbcProperties.getProperty("BAR")).isEqualTo("FOO");
-        softly.assertThat(jdbcProperties.getProperty("test")).isEqualTo("testing123");
-
-    }
+  }
 
 
 }

@@ -18,9 +18,9 @@ package biz.deinum.security.core.session.jdbc;
 
 import java.sql.Connection;
 
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.jdbc.datasource.init.ScriptUtils;
@@ -34,11 +34,11 @@ import biz.deinum.security.core.session.BaseSessionRegistryTest;
  */
 public class JdbcSessionRegistryTest extends BaseSessionRegistryTest {
 
-    private static String JDBC_URL = "jdbc:hsqldb:mem:session_registry";
+    private static final String JDBC_URL = "jdbc:hsqldb:mem:session_registry";
 
     private static DriverManagerDataSource dataSource;
 
-    @BeforeClass
+    @BeforeAll
     public static void createDatabase() throws Exception {
         dataSource = new DriverManagerDataSource();
         dataSource.setUrl(JDBC_URL);
@@ -50,7 +50,7 @@ public class JdbcSessionRegistryTest extends BaseSessionRegistryTest {
 
     }
 
-    @AfterClass
+    @AfterAll
     public static void destroyDatabase() throws Exception {
         if (dataSource != null) {
             Connection conn = dataSource.getConnection();
@@ -59,7 +59,7 @@ public class JdbcSessionRegistryTest extends BaseSessionRegistryTest {
         }
     }
 
-    @Before
+    @BeforeEach
     public void initDatabase() throws Exception {
         Connection conn = dataSource.getConnection();
         ScriptUtils.executeSqlScript(conn, new ClassPathResource("sql/session_registry_schema.sql"));

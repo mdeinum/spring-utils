@@ -16,7 +16,7 @@
 
 package biz.deinum.security.core.session.cache;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
 
 import biz.deinum.security.core.session.AbstractSessionRegistry;

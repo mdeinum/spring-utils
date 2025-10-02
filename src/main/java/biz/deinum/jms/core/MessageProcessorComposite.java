@@ -16,12 +16,10 @@
 
 package biz.deinum.jms.core;
 
+import jakarta.jms.JMSException;
+import jakarta.jms.Message;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import javax.jms.JMSException;
-import javax.jms.Message;
-
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.jms.core.MessagePostProcessor;
 
@@ -40,7 +38,7 @@ public class MessageProcessorComposite implements MessagePostProcessor {
         if (processors != null) {
             this.delegates.addAll(processors);
         }
-        Collections.sort(this.delegates, AnnotationAwareOrderComparator.INSTANCE);
+        this.delegates.sort(AnnotationAwareOrderComparator.INSTANCE);
     }
 
     @Override

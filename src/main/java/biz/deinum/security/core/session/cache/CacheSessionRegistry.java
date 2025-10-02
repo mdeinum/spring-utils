@@ -36,8 +36,8 @@ import biz.deinum.security.core.session.AbstractSessionRegistry;
  */
 public class CacheSessionRegistry extends AbstractSessionRegistry implements InitializingBean {
 
-    private static final String DEFAULT_SESSIONIDS_CACHE_NAME = "sessionIds";
-    private static final String DEFAULT_PRINCIPAL_CACHE_NAME = "principals";
+    private static final String DEFAULT_SESSIONIDS_CACHE_NAME = CacheSessionRegistry.class.getName() + ".sessionIds";
+    private static final String DEFAULT_PRINCIPAL_CACHE_NAME = CacheSessionRegistry.class.getName() + ".principals";
 
     private final CacheManager cacheManager;
     private Cache principals;
@@ -54,8 +54,8 @@ public class CacheSessionRegistry extends AbstractSessionRegistry implements Ini
     @Override
     public void afterPropertiesSet() throws Exception {
         logger.debug("Looking up caches '{}','{}'.", sessionIdCacheName, principalsCacheName);
-        this.sessionIds=cacheManager.getCache(sessionIdCacheName);
-        this.principals=cacheManager.getCache(principalsCacheName);
+        this.sessionIds = cacheManager.getCache(sessionIdCacheName);
+        this.principals = cacheManager.getCache(principalsCacheName);
     }
 
 
@@ -71,12 +71,12 @@ public class CacheSessionRegistry extends AbstractSessionRegistry implements Ini
         if (principals.get(principal) == null) {
             return Collections.emptyList();
         }
-        final Set<String> sessionsUsedByPrincipal = (Set<String>) principals.get(principal).get();
+        final var sessionsUsedByPrincipal = (Set<String>) principals.get(principal).get();
 
-        List<SessionInformation> list = new ArrayList<SessionInformation>(sessionsUsedByPrincipal.size());
+        List<SessionInformation>  list = new ArrayList<>(sessionsUsedByPrincipal.size());
 
-        for (String sessionId : sessionsUsedByPrincipal) {
-            SessionInformation sessionInformation = getSessionInformation(sessionId);
+        for (var sessionId : sessionsUsedByPrincipal) {
+            var sessionInformation = getSessionInformation(sessionId);
 
             if (sessionInformation == null) {
                 continue;
@@ -92,7 +92,7 @@ public class CacheSessionRegistry extends AbstractSessionRegistry implements Ini
 
     public SessionInformation getSessionInformation(String sessionId) {
         Assert.hasText(sessionId, "SessionId required as per interface contract");
-        Cache.ValueWrapper wrapper = sessionIds.get(sessionId);
+        var wrapper = sessionIds.get(sessionId);
         if (wrapper != null) {
             return (SessionInformation) wrapper.get();
         }
@@ -101,7 +101,7 @@ public class CacheSessionRegistry extends AbstractSessionRegistry implements Ini
     @Override
     public void refreshLastRequest(String sessionId) {
         logger.info("refreshLastRequest");
-        SessionInformation session = getSessionInformation(sessionId);
+        var session = getSessionInformation(sessionId);
         if (session != null) {
             session.refreshLastRequest();
             sessionIds.put(sessionId, session);

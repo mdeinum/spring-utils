@@ -16,20 +16,26 @@
 
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+       xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+       xmlns:batch="http://www.springframework.org/schema/batch"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd
+       http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch.xsd">
 
-    <bean class="org.springframework.batch.core.repository.support.MapJobRepositoryFactoryBean" id="jobRepository">
-        <property name="transactionManager" ref="transactionManager">
-        </property>
-    </bean>
 
-    <bean class="org.springframework.batch.core.explore.support.MapJobExplorerFactoryBean" id="jobExplorer">
-        <property name="repositoryFactory" ref="&amp;jobRepository">
-        </property>
-    </bean>
+    <jdbc:embedded-database type="HSQL" id="dataSource" generate-name="true"/>
+    <jdbc:initialize-database>
+        <jdbc:script location="classpath:org/springframework/batch/core/schema-hsqldb.sql"/>
+    </jdbc:initialize-database>
+    <batch:job-repository id="jobRepository" data-source="dataSource" />
 
-    <bean class="org.springframework.batch.core.launch.support.SimpleJobLauncher" id="jobLauncher">
+    <bean class="org.springframework.batch.core.launch.support.TaskExecutorJobLauncher" id="jobLauncher">
         <property name="jobRepository" ref="jobRepository"/>
+    </bean>
+
+    <bean id="jobExplorer" class="org.springframework.batch.core.explore.support.JobExplorerFactoryBean">
+        <property name="dataSource" ref="dataSource" />
+        <property name="transactionManager" ref="transactionManager" />
     </bean>
 
     <bean id="jobRegistry" class="org.springframework.batch.core.configuration.support.MapJobRegistry"/>
@@ -47,7 +53,7 @@
         </property>
     </bean>
 
-    <bean id="transactionManager" class="org.springframework.batch.support.transaction.ResourcelessTransactionManager">
-
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource" />
     </bean>
 </beans>

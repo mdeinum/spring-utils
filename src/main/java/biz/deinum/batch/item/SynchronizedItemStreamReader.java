@@ -15,36 +15,45 @@
  */
 package biz.deinum.batch.item;
 
+import jakarta.annotation.Nullable;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemStream;
 import org.springframework.batch.item.ItemStreamException;
 import org.springframework.batch.item.ItemStreamReader;
-import org.springframework.batch.item.NonTransientResourceException;
-import org.springframework.batch.item.ParseException;
-import org.springframework.batch.item.UnexpectedInputException;
+import org.springframework.util.Assert;
 
 /**
- * {@link ItemStreamReader} with a synchronized read method. Is useful when needing to synchronize on read in a
+ * {@link ItemStreamReader} with a using a lock for syncronization. Is useful when needing to synchronize on read in a
  * concurrent environment.
  *
  * @author Marten Deinum
  */
-public class SynchronizedItemReader<T> implements ItemStreamReader<T> {
+public class SynchronizedItemStreamReader<T> implements ItemStreamReader<T> {
 
     private final ItemReader<T> delegate;
+    private final Lock lock = new ReentrantLock();
 
     /**
      *
      * @param delegate delegate ItemReader which does the actual work.
      */
-    public SynchronizedItemReader(final ItemReader<T> delegate) {
-        super();
-        this.delegate = delegate;
+    public SynchronizedItemStreamReader(final ItemReader<T> delegate) {
+      Assert.notNull(delegate, "The delegate must not be null");
+      this.delegate = delegate;
     }
 
-    public synchronized T read() throws Exception {
-        return this.delegate.read();
+    @Override
+    @Nullable
+    public T read() throws Exception {
+        this.lock.lock();
+        try {
+          return this.delegate.read();
+        } finally {
+          this.lock.unlock();
+        }
     }
 
     public void open(final ExecutionContext executionContext) throws ItemStreamException {
@@ -63,6 +72,5 @@ public class SynchronizedItemReader<T> implements ItemStreamReader<T> {
         if (this.delegate instanceof ItemStream) {
             ((ItemStream) this.delegate).close();
         }
-
     }
 }

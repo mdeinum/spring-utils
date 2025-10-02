@@ -19,8 +19,8 @@ package biz.deinum.security.core.session;
 import java.util.Date;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.context.SecurityContext;
@@ -41,7 +41,7 @@ public abstract class BaseSessionRegistryTest {
     // ~ Methods
     // ========================================================================================================
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         logger.debug("Creating SessionRegistry for Testing.");
         sessionRegistry = createSessionRegistry();

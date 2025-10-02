@@ -16,7 +16,17 @@
 
 package biz.deinum.beans.factory.annotation;
 
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.FilterConfig;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import org.junit.jupiter.api.Test;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mock.env.MockEnvironment;
@@ -25,13 +35,9 @@ import org.springframework.web.context.support.AnnotationConfigWebApplicationCon
 import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.filter.GenericFilterBean;
 
-import javax.servlet.*;
 import java.io.IOException;
 import java.util.Date;
 import java.util.Map;
-
-import static org.junit.Assert.*;
-
 
 /**
  * Created by in329dei on 29-1-14.
@@ -42,16 +48,16 @@ public class FilterInitDestroyBeanPostProcessorTest {
     @Test
     public void shouldApplyTo() {
         FilterInitDestroyBeanPostProcessor processor = new FilterInitDestroyBeanPostProcessor();
-        assertFalse("Date is not a Filter, should not apply.", processor.shouldApplyTo(new Date()));
-        assertFalse("Filter is a GenericFilterBean, should not apply", processor.shouldApplyTo(new GenericFilterBean() {
+        assertFalse(processor.shouldApplyTo(new Date()), "Date is not a Filter, should not apply.");
+        assertFalse(processor.shouldApplyTo(new GenericFilterBean() {
             @Override
             public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
             }
-        }));
-        assertTrue("TestFilter is a normal filter, should apply.", processor.shouldApplyTo(new DummyTestFilter()));
+        }), "Filter is a GenericFilterBean, should not apply");
+        assertTrue(processor.shouldApplyTo(new DummyTestFilter()), "TestFilter is a normal filter, should apply.");
         processor.setMappedFilterClasses(new Class[] {CharacterEncodingFilter.class});
 
-        assertFalse("TestFilter isn't a mappedFilterClass, should not apply.", processor.shouldApplyTo(new DummyTestFilter()));
+        assertFalse(processor.shouldApplyTo(new DummyTestFilter()), "TestFilter isn't a mappedFilterClass, should not apply.");
     }
 
     @Test
@@ -114,7 +120,7 @@ public class FilterInitDestroyBeanPostProcessorTest {
         assertEquals("baz", filter2.getValue());
         assertEquals("filter2", filter2.getName());
 
-        context.destroy();
+        context.close();
         assertTrue(filter1.isDestroyCalled());
         assertTrue(filter2.isDestroyCalled());
 

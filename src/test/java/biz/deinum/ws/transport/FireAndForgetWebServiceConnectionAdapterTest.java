@@ -16,17 +16,17 @@
 
 package biz.deinum.ws.transport;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.ws.WebServiceMessage;
 import org.springframework.ws.WebServiceMessageFactory;
 import org.springframework.ws.transport.WebServiceConnection;
 
-import static org.junit.Assert.assertNull;
-import static org.mockito.Matchers.any;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.*;
 
 /**
@@ -36,7 +36,7 @@ import static org.mockito.Mockito.*;
  * Time: 10:03
  * To change this template use File | Settings | File Templates.
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class FireAndForgetWebServiceConnectionAdapterTest {
 
 
@@ -49,7 +49,7 @@ public class FireAndForgetWebServiceConnectionAdapterTest {
 
     private FireAndForgetWebServiceConnectionAdapter adapter;
 
-    @Before
+    @BeforeEach
     public void before() {
         adapter = new FireAndForgetWebServiceConnectionAdapter(delegate);
     }

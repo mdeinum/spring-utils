@@ -16,10 +16,11 @@
 
 package biz.deinum.ws.transport;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.ws.transport.WebServiceMessageSender;
 
 import static org.mockito.Mockito.times;
@@ -32,7 +33,7 @@ import static org.mockito.Mockito.verify;
  * Time: 10:16
  * To change this template use File | Settings | File Templates.
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class FireAndForgetWebServiceMessageSenderAdapterTest {
 
     @Mock

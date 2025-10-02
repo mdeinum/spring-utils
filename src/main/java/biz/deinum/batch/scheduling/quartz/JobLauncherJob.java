@@ -17,21 +17,16 @@
 package biz.deinum.batch.scheduling.quartz;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-
 import org.quartz.Job;
-import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.JobExecution;
-import org.springframework.batch.core.JobInstance;
 import org.springframework.batch.core.JobParameter;
 import org.springframework.batch.core.JobParameters;
-import org.springframework.batch.core.JobParametersIncrementer;
 import org.springframework.batch.core.JobParametersInvalidException;
 import org.springframework.batch.core.configuration.JobRegistry;
 import org.springframework.batch.core.explore.JobExplorer;
@@ -80,9 +75,9 @@ public class JobLauncherJob implements Job {
         }
 
         try {
-            org.springframework.batch.core.Job jobToLaunch = findJob(this.jobName);
-            JobParameters jobParameters = getJobParameters(context);
-            JobExecution result = execute(jobToLaunch, jobParameters);
+            var jobToLaunch = findJob(this.jobName);
+            var jobParameters = getJobParameters(context);
+            var result = execute(jobToLaunch, jobParameters);
             context.setResult(result);
 
         } catch (org.springframework.batch.core.JobExecutionException e) {
@@ -91,7 +86,7 @@ public class JobLauncherJob implements Job {
     }
 
     protected JobExecution execute(org.springframework.batch.core.Job job, JobParameters jobParameters) throws JobParametersInvalidException, JobExecutionAlreadyRunningException, JobRestartException, JobInstanceAlreadyCompleteException {
-        JobParameters nextParameters = getNextJobParameters(job, jobParameters);
+        var nextParameters = getNextJobParameters(job, jobParameters);
         logger.info("Using parameters: {}", nextParameters);
         if (nextParameters != null) {
             JobExecution execution = this.jobLauncher.run(job, nextParameters);
@@ -102,20 +97,19 @@ public class JobLauncherJob implements Job {
 
     private JobParameters getNextJobParameters(org.springframework.batch.core.Job job,
                                                JobParameters additionalParameters) {
-        String name = job.getName();
-        JobParameters parameters = new JobParameters();
-        List<JobInstance> lastInstances = this.jobExplorer.getJobInstances(name, 0, 1);
-        JobParametersIncrementer incrementer = job.getJobParametersIncrementer();
-        Map<String, JobParameter> additionals = additionalParameters.getParameters();
+        var name = job.getName();
+        var parameters = new JobParameters();
+        var lastInstances = this.jobExplorer.getJobInstances(name, 0, 1);
+        var incrementer = job.getJobParametersIncrementer();
+        var additionals = additionalParameters.getParameters();
         if (lastInstances.isEmpty()) {
             // Start from a completely clean sheet
             if (incrementer != null) {
                 parameters = incrementer.getNext(new JobParameters());
             }
         } else {
-            List<JobExecution> previousExecutions = this.jobExplorer
-                    .getJobExecutions(lastInstances.get(0));
-            JobExecution previousExecution = CollectionUtils.isEmpty(previousExecutions) ? null : previousExecutions.get(0);
+            var previousExecutions = this.jobExplorer.getJobExecutions(lastInstances.get(0));
+            var previousExecution = CollectionUtils.isEmpty(previousExecutions) ? null : previousExecutions.get(0);
             if (previousExecution == null) {
                 // Normally this will not happen - an instance exists with no executions
                 if (incrementer != null) {
@@ -135,14 +129,13 @@ public class JobLauncherJob implements Job {
     }
 
     private boolean isStoppedOrFailed(JobExecution execution) {
-        BatchStatus status = execution.getStatus();
+        var status = execution.getStatus();
         return (status == BatchStatus.STOPPED || status == BatchStatus.FAILED);
     }
 
-    private void removeNonIdentifying(Map<String, JobParameter> parameters) {
-        HashMap<String, JobParameter> copy = new HashMap<>(
-                parameters);
-        for (Map.Entry<String, JobParameter> parameter : copy.entrySet()) {
+    private void removeNonIdentifying(Map<String, JobParameter<?>> parameters) {
+        var copy = new HashMap<>(parameters);
+        for (var parameter : copy.entrySet()) {
             if (!parameter.getValue().isIdentifying()) {
                 parameters.remove(parameter.getKey());
             }
@@ -150,16 +143,14 @@ public class JobLauncherJob implements Job {
     }
 
     private JobParameters merge(JobParameters parameters,
-                                Map<String, JobParameter> additionals) {
-        Map<String, JobParameter> merged = new HashMap<>();
-        merged.putAll(parameters.getParameters());
+                                Map<String, JobParameter<?>> additionals) {
+       var merged = new HashMap<>(parameters.getParameters());
         merged.putAll(additionals);
-        parameters = new JobParameters(merged);
-        return parameters;
+        return new JobParameters(merged);
     }
 
     private JobParameters getJobParameters(JobExecutionContext context) {
-        final JobDataMap jobDataMap = context.getMergedJobDataMap();
+        final var jobDataMap = context.getMergedJobDataMap();
         return converter.getJobParameters(jobDataMap);
     }
 

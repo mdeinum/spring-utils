@@ -17,8 +17,8 @@
 package biz.deinum.web.servlet;
 
 import java.util.Locale;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.i18n.AbstractLocaleResolver;
@@ -52,7 +52,7 @@ public class SubDomainLocaleResolver extends AbstractLocaleResolver {
      * @param request the request to resolve the locale for
      * @return the default locale (never {@code null})
      * @see #setDefaultLocale
-     * @see javax.servlet.http.HttpServletRequest#getLocale()
+     * @see jakarta.servlet.http.HttpServletRequest#getLocale()
      */
     protected Locale determineDefaultLocale(HttpServletRequest request) {
         Locale defaultLocale = getDefaultLocale();

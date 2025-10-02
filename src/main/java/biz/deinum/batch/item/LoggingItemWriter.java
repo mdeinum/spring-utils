@@ -16,10 +16,9 @@
 
 package biz.deinum.batch.item;
 
-import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.batch.item.Chunk;
 import org.springframework.batch.item.ItemWriter;
 
 /**
@@ -33,7 +32,8 @@ public class LoggingItemWriter<T> implements ItemWriter<T> {
 
     private final Logger logger = LoggerFactory.getLogger(LoggingItemWriter.class);
 
-    public void write(final List<? extends T> items) throws Exception {
+    @Override
+    public void write(final Chunk<? extends T> items) throws Exception {
         for (final T item : items) {
             this.logger.trace("Writing item: {}", item);
         }

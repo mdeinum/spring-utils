@@ -17,8 +17,6 @@
 package biz.deinum.batch.scheduling.quartz;
 
 import java.util.Date;
-import java.util.Map;
-
 import org.quartz.JobDataMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,27 +54,27 @@ public class DefaultJobParametersConverter implements JobParametersConverter {
             return new JobParameters();
         }
 
-        JobParametersBuilder builder = new JobParametersBuilder();
-        for (Map.Entry<String, Object> entry : jobDataMap.entrySet()) {
-            String key = entry.getKey();
-            Object value = entry.getValue();
-            boolean identifying = isIdentifyingKey(key);
+        var builder = new JobParametersBuilder();
+        for (var entry : jobDataMap.entrySet()) {
+            var key = entry.getKey();
+            var value = entry.getValue();
+            var identifying = isIdentifyingKey(key);
             if (!identifying) {
                 key = key.replaceFirst(NON_IDENTIFYING_FLAG, "");
             } else if (identifying && key.startsWith(IDENTIFYING_FLAG)) {
                 key = key.replaceFirst("\\" + IDENTIFYING_FLAG, "");
             }
 
-            if (value instanceof String) {
-                builder.addString(key, (String) value, identifying);
-            } else if (value instanceof Long) {
-                builder.addLong(key, (Long) value, identifying);
-            } else if (value instanceof Double) {
-                builder.addDouble(key, (Double) value, identifying);
-            } else if (value instanceof Date) {
-                builder.addDate(key, (Date) value, identifying);
-            } else if (value instanceof JobParameter) {
-                builder.addParameter(key, (JobParameter) value);
+            if (value instanceof String val) {
+                builder.addString(key, val, identifying);
+            } else if (value instanceof Long val) {
+                builder.addLong(key, val, identifying);
+            } else if (value instanceof Double val) {
+                builder.addDouble(key, val, identifying);
+            } else if (value instanceof Date val) {
+                builder.addDate(key, val, identifying);
+            } else if (value instanceof JobParameter<?> val) {
+                builder.addJobParameter(key, val);
             } else {
                 logger.debug("Ignoring context property '{}' with value '{}' not a supported type.", key, value);
             }
@@ -97,19 +95,17 @@ public class DefaultJobParametersConverter implements JobParametersConverter {
 
     @Override
     public JobDataMap getJobDataMap(JobParameters params) {
-        JobDataMap jobDataMap = new JobDataMap();
+        var jobDataMap = new JobDataMap();
 
         if (params != null && !params.isEmpty()) {
-            Map<String, JobParameter> parameters = params.getParameters();
-            for (Map.Entry<String, JobParameter> entry : parameters.entrySet()) {
+            var parameters = params.getParameters();
+            for (var entry : parameters.entrySet()) {
 
-                String key = entry.getKey();
-                JobParameter jobParameter = entry.getValue();
-                Object value = jobParameter.getValue();
-                if (value != null) {
-                    key = (!jobParameter.isIdentifying() ? NON_IDENTIFYING_FLAG : "") + key;
-                    jobDataMap.put(key, value);
-                }
+                var key = entry.getKey();
+                var jobParameter = entry.getValue();
+                var value = jobParameter.getValue();
+                key = (!jobParameter.isIdentifying() ? NON_IDENTIFYING_FLAG : "") + key;
+                jobDataMap.put(key, value);
             }
         }
         return jobDataMap;

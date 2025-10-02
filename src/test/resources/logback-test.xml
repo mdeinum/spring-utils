@@ -27,6 +27,7 @@
 
     <!--<logger name="org.quartz" level="trace" />-->
     <logger name="biz.deinum" level="trace" />
+    <logger name="org.osjava" level="trace" />
     <root level="INFO">
         <appender-ref ref="STDOUT" />
     </root>
